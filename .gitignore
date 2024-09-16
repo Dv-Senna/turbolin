@@ -30,3 +30,16 @@
 *.exe
 *.out
 *.app
+
+# Build folder
+build/*
+
+# Editor-specific
+.vscode/*
+.clangd
+
+# Root folder scripts
+*.sh
+!*/*.sh
+*.bat
+!*/*.bat
