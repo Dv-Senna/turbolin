@@ -1,10 +1,11 @@
-#include <iostream>
-
 #include <turbolin/assertion.hpp>
+#include <turbolin/logger.hpp>
+
+
 
 int main() {
-
-	std::cout << "Hello World !" << std::endl;
+	tl::log("Hello World !");
+	tl::log("Hello {} peoples !", 12);
 
 	return 0;
 }
