@@ -14,6 +14,8 @@ set(PROJECT_CPP_DIALECT 23)
 
 option(BUILD_TESTS "BUILD_TESTS" OFF)
 
+add_compile_definitions("${PROJECT_ACRONYM_UPPERCASE}_$<IF:$<CONFIG:Debug>,DEBUG,RELEASE>")
+
 add_subdirectory(lib)
 add_subdirectory(sandbox)
 if (BUILD_TESTS)

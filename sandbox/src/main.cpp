@@ -1,10 +1,8 @@
 #include <iostream>
 
-#include <test.hpp>
-
+#include <turbolin/assertion.hpp>
 
 int main() {
-	test::sayHello();
 
 	std::cout << "Hello World !" << std::endl;
 
