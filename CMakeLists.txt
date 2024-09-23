@@ -11,13 +11,15 @@ project(turbolin
 set(PROJECT_ACRONYM tl)
 string(TOUPPER ${PROJECT_ACRONYM} PROJECT_ACRONYM_UPPERCASE)
 set(PROJECT_CPP_DIALECT 23)
+set(CMAKE_CXX_STANDARD ${PROJECT_CPP_DIALECT})
 
 option(BUILD_TESTS "BUILD_TESTS" OFF)
 
 add_compile_definitions("${PROJECT_ACRONYM_UPPERCASE}_$<IF:$<CONFIG:Debug>,DEBUG,RELEASE>")
 
-add_subdirectory(lib)
-add_subdirectory(sandbox)
-if (BUILD_TESTS)
-	add_subdirectory(tests)
-endif()
+include_directories(include vendors/TestItNow/include)
+
+file(GLOB_RECURSE TURBOLIN_HEADER include/*.hpp include/*.inl)
+file(GLOB_RECURSE TEST_SOURCES tests/*.cpp)
+
+add_executable(${PROJECT_NAME} ${TURBOLIN_HEADER} ${TEST_SOURCES})

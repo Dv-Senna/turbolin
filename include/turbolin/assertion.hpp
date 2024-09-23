@@ -2,11 +2,11 @@
 
 #include <iostream>
 
-#ifdef TL_WINDOWS
+#ifdef WIN32
 	#include <intrin.h>
-#elifdef TL_LINX
+#elifdef __linux__
 	#include <signal.h>
-#elifdef TL_APPLE
+#elifdef __APPLE__
 	#include <signal.h>
 #endif
 
@@ -14,11 +14,11 @@
 #define __TL_LOG_ASSERT_MESSAGE(expr, msg) std::cout << "Assertion in " __FILE__ ":" << __LINE__ << " '" #expr "' failed : " msg << std::endl
 
 
-#ifdef TL_WINDOWS
+#ifdef WIN32
 	#define __TL_ASSERT_DEBUG_BREAKPOINT __debugbreak() 
-#elifdef TL_LINUX
+#elifdef __linux__
 	#define __TL_ASSERT_DEBUG_BREAKPOINT raise(SIGTRAP) 
-#elifdef TL_APPLE
+#elifdef __APPLE__
 	#define __TL_ASSERT_DEBUG_BREAKPOINT raise(SIGTRAP)
 #else
 	#define No platform selected (or selected platform is not supported by turbolin)
