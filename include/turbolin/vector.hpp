@@ -1,23 +1,25 @@
 #pragma once
 
 #include <cinttypes>
-
-#include "turbolin/isNumber.hpp"
+#include <type_traits>
 
 
 
 namespace turbolin {
 	namespace {
 		template <typename T>
+		concept IsVectorType = std::is_same_v<float, T> || std::is_same_v<std::int32_t, T>;
+
+		template <typename T>
 		struct VectorAlignement {
 			static constexpr std::size_t alignment {16};
 		};
 
 
-		template <turbolin::IsNumber T, std::size_t D>
+		template <turbolin::IsVectorType T, std::size_t D>
 		struct VectorLayout;
 
-		template <turbolin::IsNumber T>
+		template <turbolin::IsVectorType T>
 		struct VectorLayout<T, 2> {
 			union {
 				T x;
@@ -35,7 +37,7 @@ namespace turbolin {
 				T __padding[2];
 		};
 
-		template <turbolin::IsNumber T>
+		template <turbolin::IsVectorType T>
 		struct VectorLayout<T, 3> {
 			union {
 				T x;
@@ -59,7 +61,7 @@ namespace turbolin {
 				T __padding[1];
 		};
 
-		template <turbolin::IsNumber T>
+		template <turbolin::IsVectorType T>
 		struct VectorLayout<T, 4> {
 			union {
 				T x;
@@ -85,10 +87,22 @@ namespace turbolin {
 	} // namespace
 
 
-	template <turbolin::IsNumber T, std::size_t D>
+	template <turbolin::IsVectorType T, std::size_t D>
 	class alignas(turbolin::VectorAlignement<T>::alignment) Vector : public turbolin::VectorLayout<T, D> {
 		public:
-			Vector() = default;
+			template <turbolin::IsVectorType ...Args>
+			Vector(Args&& ...args) noexcept;
+
+			template <turbolin::IsVectorType T2, std::size_t D2, turbolin::IsVectorType ...Args>
+			Vector(const turbolin::Vector<T2, D2> &vector, Args&& ...args) noexcept;
+			template <turbolin::IsVectorType T2>
+			const turbolin::Vector<T, D> &operator=(const turbolin::Vector<T2, D> &vector) noexcept;
+
+			template <turbolin::IsVectorType T2>
+			bool operator==(const turbolin::Vector<T2, D> &vector) const noexcept;
 	};
 
 } // namespace turbolin
+
+
+#include "turbolin/vector.inl"
