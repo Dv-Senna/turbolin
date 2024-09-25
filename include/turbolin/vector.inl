@@ -238,7 +238,7 @@ namespace turbolin {
 				r2 = _mm_cvtps_epi32(r3);
 			}
 
-			r1 = _mm_mul_epi32(r1, r2);
+			r1 = _mm_mullo_epi32(r1, r2);
 			_mm_store_si128(reinterpret_cast<__m128i*> (this), r1);
 		}
 
@@ -279,7 +279,7 @@ namespace turbolin {
 			}
 			else {
 				r1 = _mm_load_si128(reinterpret_cast<const __m128i*> (&lhs));
-				__m128i r3 {_mm_load_ps(reinterpret_cast<const float*> (&rhs))};
+				__m128 r3 {_mm_load_ps(reinterpret_cast<const float*> (&rhs))};
 				r2 = _mm_cvtps_epi32(r3);
 			}
 
@@ -288,8 +288,7 @@ namespace turbolin {
 			__m128i sums {_mm_add_epi32(r1, shuf)};
 			shuf = _mm_shuffle_epi32(sums, _MM_SHUFFLE(0, 0, 3, 2));
 			sums = _mm_add_epi32(sums, shuf);
-//			return _mm_cvtepi32_i(sums);
-			return 0;
+			return _mm_extract_epi32(sums, 0);
 		}
 	}
 

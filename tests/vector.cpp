@@ -1,5 +1,7 @@
 #include <TestItNow/TestItNow.hpp>
 
+#include <iostream>
+
 #include <turbolin/vector.hpp>
 
 
@@ -32,5 +34,31 @@ TIN_START_TEST(vector)
 	TIN_NAMED_CHECK("FLOAT - vec1 * vec2", (vec1 * vec2) == turbolin::Vector<float, 4> {1.f, 4.f, 9.f, 16.f});
 }
 
+{
+	turbolin::Vector<int, 4> vec0 {};
+	turbolin::Vector<int, 4> vec1 {1, 2, 3, 4};
+	turbolin::Vector<int, 2> vec2_tmp {1, 2};
+	turbolin::Vector<int, 4> vec2 {vec2_tmp, 3, 4};
+
+	TIN_NAMED_MANDATORY_CHECK("INT - vec0 init", ((int*)(&vec0))[0] == 0 && ((int*)(&vec0))[1] == 0 && ((int*)(&vec0))[2] == 0 && ((int*)(&vec0))[3] == 0);
+	TIN_NAMED_MANDATORY_CHECK("INT - vec1 init", ((int*)(&vec1))[0] == 1 && ((int*)(&vec1))[1] == 2 && ((int*)(&vec1))[2] == 3 && ((int*)(&vec1))[3] == 4);
+	TIN_NAMED_MANDATORY_CHECK("INT - vec2 init", ((int*)(&vec2))[0] == 1 && ((int*)(&vec2))[1] == 2 && ((int*)(&vec2))[2] == 3 && ((int*)(&vec2))[3] == 4);
+
+	TIN_NAMED_MANDATORY_CHECK("INT - vec0 self equality", vec0 == vec0);
+	TIN_NAMED_MANDATORY_CHECK("INT - vec1 self equality", vec1 == vec1);
+
+	TIN_NAMED_MANDATORY_CHECK("INT - vec1/vec2 equality",   vec1 == vec2);
+	TIN_NAMED_MANDATORY_CHECK("INT - vec0/vec1 inequality", vec0 != vec1);
+
+	TIN_NAMED_CHECK("INT - vec1 += vec2", (vec1 += vec2) == turbolin::Vector<int, 4> {2, 4, 6, 8});
+	TIN_NAMED_CHECK("INT - vec1 -= vec2", (vec1 -= vec2) == turbolin::Vector<int, 4> {1, 2, 3, 4});
+	TIN_NAMED_CHECK("INT - vec1 *= vec2", (vec1 *= vec2) == turbolin::Vector<int, 4> {1, 4, 9, 16});
+
+	vec1 = {1, 2, 3, 4};
+
+	TIN_NAMED_CHECK("INT - vec1 + vec2", (vec1 + vec2) == turbolin::Vector<int, 4> {2, 4, 6, 8});
+	TIN_NAMED_CHECK("INT - vec1 - vec2", (vec1 - vec2) == turbolin::Vector<int, 4> {0, 0, 0, 0});
+	TIN_NAMED_CHECK("INT - vec1 * vec2", (vec1 * vec2) == turbolin::Vector<int, 4> {1, 4, 9, 16});
+}
 TIN_END_TEST(vector, "Test of Turbolin's vector implementation")
 

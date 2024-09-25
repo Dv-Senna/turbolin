@@ -22,4 +22,6 @@ include_directories(include vendors/TestItNow/include)
 file(GLOB_RECURSE TURBOLIN_HEADER include/*.hpp include/*.inl)
 file(GLOB_RECURSE TEST_SOURCES tests/*.cpp)
 
+add_compile_options(-march=native)
+
 add_executable(${PROJECT_NAME} ${TURBOLIN_HEADER} ${TEST_SOURCES})
