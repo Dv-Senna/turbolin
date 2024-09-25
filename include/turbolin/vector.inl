@@ -262,10 +262,34 @@ namespace turbolin {
 				r2 = _mm_cvtepi32_ps(r3);
 			}
 
-	
+			r1 = _mm_mul_ps(r1, r2);
+			__m128 shuf {_mm_movehdup_ps(r1)};
+			__m128 sums {_mm_add_ps(r1, shuf)};
+			shuf = _mm_movehl_ps(shuf, sums);
+			sums = _mm_add_ss(sums, shuf);
+			return _mm_cvtss_f32(sums);
 		}
 		else {
+			__m128i r1 {};
+			__m128i r2 {};
 
+			if constexpr (std::is_same_v<T, T2>) {
+				r1 = _mm_load_si128(reinterpret_cast<const __m128i*> (&lhs));
+				r2 = _mm_load_si128(reinterpret_cast<const __m128i*> (&rhs));
+			}
+			else {
+				r1 = _mm_load_si128(reinterpret_cast<const __m128i*> (&lhs));
+				__m128i r3 {_mm_load_ps(reinterpret_cast<const float*> (&rhs))};
+				r2 = _mm_cvtps_epi32(r3);
+			}
+
+			r1 = _mm_mul_epi32(r1, r2);
+			__m128i shuf {_mm_shuffle_epi32(r1, _MM_SHUFFLE(3, 3, 1, 1))};
+			__m128i sums {_mm_add_epi32(r1, shuf)};
+			shuf = _mm_shuffle_epi32(sums, _MM_SHUFFLE(0, 0, 3, 2));
+			sums = _mm_add_epi32(sums, shuf);
+//			return _mm_cvtepi32_i(sums);
+			return 0;
 		}
 	}
 
