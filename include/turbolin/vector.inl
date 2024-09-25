@@ -120,4 +120,130 @@ namespace turbolin {
 	}
 
 
+	template <turbolin::IsVectorType T, std::size_t D>
+	template <turbolin::IsVectorType T2>
+	const turbolin::Vector<T, D> Vector<T, D>::operator+=(const turbolin::Vector<T2, D> &vector) noexcept {
+		if constexpr (std::is_same_v<T, float>) {
+			__m128 r1 {};
+			__m128 r2 {};
+
+			if constexpr (std::is_same_v<T, T2>) {
+				r1 = _mm_load_ps(reinterpret_cast<const float*> (this));
+				r2 = _mm_load_ps(reinterpret_cast<const float*> (&vector));
+			}
+			else {
+				r1 = _mm_load_ps(reinterpret_cast<const float*> (this));
+				__m128i r3 {_mm_load_si128(reinterpret_cast<const __m128i*> (&vector))};
+				r2 = _mm_cvtepi32_ps(r3);
+			}
+
+			r1 = _mm_add_ps(r1, r2);
+			_mm_store_ps(reinterpret_cast<float*> (this), r1);
+		}
+		else {
+			__m128i r1 {};
+			__m128i r2 {};
+
+			if constexpr (std::is_same_v<T, T2>) {
+				r1 = _mm_load_si128(reinterpret_cast<const __m128i*> (this));
+				r2 = _mm_load_si128(reinterpret_cast<const __m128i*> (&vector));
+			}
+			else {
+				r1 = _mm_load_si128(reinterpret_cast<const __m128i*> (this));
+				__m128 r3 {_mm_load_ps(reinterpret_cast<const float*> (&vector))};
+				r2 = _mm_cvtps_epi32(r3);
+			}
+
+			r1 = _mm_add_epi32(r1, r2);
+			_mm_store_si128(reinterpret_cast<__m128i*> (this), r1);
+		}
+
+		return *this;
+	}
+
+
+	template <turbolin::IsVectorType T, std::size_t D>
+	template <turbolin::IsVectorType T2>
+	const turbolin::Vector<T, D> Vector<T, D>::operator-=(const turbolin::Vector<T2, D> &vector) noexcept {
+		if constexpr (std::is_same_v<T, float>) {
+			__m128 r1 {};
+			__m128 r2 {};
+
+			if constexpr (std::is_same_v<T, T2>) {
+				r1 = _mm_load_ps(reinterpret_cast<const float*> (this));
+				r2 = _mm_load_ps(reinterpret_cast<const float*> (&vector));
+			}
+			else {
+				r1 = _mm_load_ps(reinterpret_cast<const float*> (this));
+				__m128i r3 {_mm_load_si128(reinterpret_cast<const __m128i*> (&vector))};
+				r2 = _mm_cvtepi32_ps(r3);
+			}
+
+			r1 = _mm_sub_ps(r1, r2);
+			_mm_store_ps(reinterpret_cast<float*> (this), r1);
+		}
+		else {
+			__m128i r1 {};
+			__m128i r2 {};
+
+			if constexpr (std::is_same_v<T, T2>) {
+				r1 = _mm_load_si128(reinterpret_cast<const __m128i*> (this));
+				r2 = _mm_load_si128(reinterpret_cast<const __m128i*> (&vector));
+			}
+			else {
+				r1 = _mm_load_si128(reinterpret_cast<const __m128i*> (this));
+				__m128 r3 {_mm_load_ps(reinterpret_cast<const float*> (&vector))};
+				r2 = _mm_cvtps_epi32(r3);
+			}
+
+			r1 = _mm_sub_epi32(r1, r2);
+			_mm_store_si128(reinterpret_cast<__m128i*> (this), r1);
+		}
+
+		return *this;
+	}
+
+
+	template <turbolin::IsVectorType T, std::size_t D>
+	template <turbolin::IsVectorType T2>
+	const turbolin::Vector<T, D> Vector<T, D>::operator*=(const turbolin::Vector<T2, D> &vector) noexcept {
+		if constexpr (std::is_same_v<T, float>) {
+			__m128 r1 {};
+			__m128 r2 {};
+
+			if constexpr (std::is_same_v<T, T2>) {
+				r1 = _mm_load_ps(reinterpret_cast<const float*> (this));
+				r2 = _mm_load_ps(reinterpret_cast<const float*> (&vector));
+			}
+			else {
+				r1 = _mm_load_ps(reinterpret_cast<const float*> (this));
+				__m128i r3 {_mm_load_si128(reinterpret_cast<const __m128i*> (&vector))};
+				r2 = _mm_cvtepi32_ps(r3);
+			}
+
+			r1 = _mm_mul_ps(r1, r2);
+			_mm_store_ps(reinterpret_cast<float*> (this), r1);
+		}
+		else {
+			__m128i r1 {};
+			__m128i r2 {};
+
+			if constexpr (std::is_same_v<T, T2>) {
+				r1 = _mm_load_si128(reinterpret_cast<const __m128i*> (this));
+				r2 = _mm_load_si128(reinterpret_cast<const __m128i*> (&vector));
+			}
+			else {
+				r1 = _mm_load_si128(reinterpret_cast<const __m128i*> (this));
+				__m128 r3 {_mm_load_ps(reinterpret_cast<const float*> (&vector))};
+				r2 = _mm_cvtps_epi32(r3);
+			}
+
+			r1 = _mm_mul_epi32(r1, r2);
+			_mm_store_si128(reinterpret_cast<__m128i*> (this), r1);
+		}
+
+		return *this;
+	}
+
+
 } // namespace turbolin

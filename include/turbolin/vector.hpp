@@ -100,6 +100,13 @@ namespace turbolin {
 
 			template <turbolin::IsVectorType T2>
 			bool operator==(const turbolin::Vector<T2, D> &vector) const noexcept;
+
+			template <turbolin::IsVectorType T2>
+			const turbolin::Vector<T, D> operator+=(const turbolin::Vector<T2, D> &vector) noexcept;
+			template <turbolin::IsVectorType T2>
+			const turbolin::Vector<T, D> operator-=(const turbolin::Vector<T2, D> &vector) noexcept;
+			template <turbolin::IsVectorType T2>
+			const turbolin::Vector<T, D> operator*=(const turbolin::Vector<T2, D> &vector) noexcept;
 	};
 
 } // namespace turbolin
