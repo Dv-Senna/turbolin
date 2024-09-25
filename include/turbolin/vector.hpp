@@ -102,12 +102,24 @@ namespace turbolin {
 			bool operator==(const turbolin::Vector<T2, D> &vector) const noexcept;
 
 			template <turbolin::IsVectorType T2>
-			const turbolin::Vector<T, D> operator+=(const turbolin::Vector<T2, D> &vector) noexcept;
+			const turbolin::Vector<T, D> &operator+=(const turbolin::Vector<T2, D> &vector) noexcept;
 			template <turbolin::IsVectorType T2>
-			const turbolin::Vector<T, D> operator-=(const turbolin::Vector<T2, D> &vector) noexcept;
+			const turbolin::Vector<T, D> &operator-=(const turbolin::Vector<T2, D> &vector) noexcept;
 			template <turbolin::IsVectorType T2>
-			const turbolin::Vector<T, D> operator*=(const turbolin::Vector<T2, D> &vector) noexcept;
+			const turbolin::Vector<T, D> &operator*=(const turbolin::Vector<T2, D> &vector) noexcept;
+
+			template <turbolin::IsVectorType T2>
+			inline turbolin::Vector<T, D> operator+(const turbolin::Vector<T2, D> &vector) const noexcept {auto copy {*this}; return copy += vector;}
+			template <turbolin::IsVectorType T2>
+			inline turbolin::Vector<T, D> operator-(const turbolin::Vector<T2, D> &vector) const noexcept {auto copy {*this}; return copy -= vector;}
+			template <turbolin::IsVectorType T2>
+			inline turbolin::Vector<T, D> operator*(const turbolin::Vector<T2, D> &vector) const noexcept {auto copy {*this}; return copy *= vector;}
 	};
+
+
+	template <turbolin::IsVectorType T, turbolin::IsVectorType T2, std::size_t D>
+	T dot(const turbolin::Vector<T, D> &lhs, const turbolin::Vector<T2, D> &rhs);
+
 
 } // namespace turbolin
 

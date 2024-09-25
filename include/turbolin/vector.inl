@@ -122,7 +122,7 @@ namespace turbolin {
 
 	template <turbolin::IsVectorType T, std::size_t D>
 	template <turbolin::IsVectorType T2>
-	const turbolin::Vector<T, D> Vector<T, D>::operator+=(const turbolin::Vector<T2, D> &vector) noexcept {
+	const turbolin::Vector<T, D> &Vector<T, D>::operator+=(const turbolin::Vector<T2, D> &vector) noexcept {
 		if constexpr (std::is_same_v<T, float>) {
 			__m128 r1 {};
 			__m128 r2 {};
@@ -164,7 +164,7 @@ namespace turbolin {
 
 	template <turbolin::IsVectorType T, std::size_t D>
 	template <turbolin::IsVectorType T2>
-	const turbolin::Vector<T, D> Vector<T, D>::operator-=(const turbolin::Vector<T2, D> &vector) noexcept {
+	const turbolin::Vector<T, D> &Vector<T, D>::operator-=(const turbolin::Vector<T2, D> &vector) noexcept {
 		if constexpr (std::is_same_v<T, float>) {
 			__m128 r1 {};
 			__m128 r2 {};
@@ -206,7 +206,7 @@ namespace turbolin {
 
 	template <turbolin::IsVectorType T, std::size_t D>
 	template <turbolin::IsVectorType T2>
-	const turbolin::Vector<T, D> Vector<T, D>::operator*=(const turbolin::Vector<T2, D> &vector) noexcept {
+	const turbolin::Vector<T, D> &Vector<T, D>::operator*=(const turbolin::Vector<T2, D> &vector) noexcept {
 		if constexpr (std::is_same_v<T, float>) {
 			__m128 r1 {};
 			__m128 r2 {};
@@ -243,6 +243,30 @@ namespace turbolin {
 		}
 
 		return *this;
+	}
+
+
+	template <turbolin::IsVectorType T, turbolin::IsVectorType T2, std::size_t D>
+	T dot(const turbolin::Vector<T, D> &lhs, const turbolin::Vector<T2, D> &rhs) {
+		if constexpr (std::is_same_v<T, float>) {
+			__m128 r1 {};
+			__m128 r2 {};
+
+			if constexpr (std::is_same_v<T, T2>) {
+				r1 = _mm_load_ps(reinterpret_cast<const float*> (&lhs));
+				r2 = _mm_load_ps(reinterpret_cast<const float*> (&rhs));
+			}
+			else {
+				r1 = _mm_load_ps(reinterpret_cast<const float*> (&lhs));
+				__m128i r3 {_mm_load_si128(reinterpret_cast<const __m128i*> (&rhs))};
+				r2 = _mm_cvtepi32_ps(r3);
+			}
+
+	
+		}
+		else {
+
+		}
 	}
 
 

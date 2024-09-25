@@ -24,6 +24,12 @@ TIN_START_TEST(vector)
 	TIN_NAMED_CHECK("FLOAT - vec1 += vec2", (vec1 += vec2) == turbolin::Vector<float, 4> {2.f, 4.f, 6.f, 8.f});
 	TIN_NAMED_CHECK("FLOAT - vec1 -= vec2", (vec1 -= vec2) == turbolin::Vector<float, 4> {1.f, 2.f, 3.f, 4.f});
 	TIN_NAMED_CHECK("FLOAT - vec1 *= vec2", (vec1 *= vec2) == turbolin::Vector<float, 4> {1.f, 4.f, 9.f, 16.f});
+
+	vec1 = {1.f, 2.f, 3.f, 4.f};
+
+	TIN_NAMED_CHECK("FLOAT - vec1 + vec2", (vec1 + vec2) == turbolin::Vector<float, 4> {2.f, 4.f, 6.f, 8.f});
+	TIN_NAMED_CHECK("FLOAT - vec1 - vec2", (vec1 - vec2) == turbolin::Vector<float, 4> {0.f, 0.f, 0.f, 0.f});
+	TIN_NAMED_CHECK("FLOAT - vec1 * vec2", (vec1 * vec2) == turbolin::Vector<float, 4> {1.f, 4.f, 9.f, 16.f});
 }
 
 TIN_END_TEST(vector, "Test of Turbolin's vector implementation")
