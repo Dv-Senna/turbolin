@@ -285,12 +285,12 @@ namespace turbolin {
 				r2 = _mm_cvtps_epi32(r3);
 			}
 
-			r1 = _mm_mul_epi32(r1, r2);
-			__m128i shuf {_mm_shuffle_epi32(r1, _MM_SHUFFLE(0, 0, 2, 2))};
+			r1 = _mm_mullo_epi32(r1, r2);
+			__m128i shuf {_mm_shuffle_epi32(r1, _MM_SHUFFLE(1, 0, 3, 2))};
 			__m128i sums {_mm_add_epi32(r1, shuf)};
-			shuf = _mm_shuffle_epi32(sums, _MM_SHUFFLE(0, 1, 3, 1));
+			shuf = _mm_shuffle_epi32(sums, _MM_SHUFFLE(3, 2, 1, 1));
 			sums = _mm_add_epi32(sums, shuf);
-			return _mm_extract_epi32(sums, 3);
+			return _mm_extract_epi32(sums, 0);
 		}
 	}
 

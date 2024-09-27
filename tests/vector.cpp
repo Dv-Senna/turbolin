@@ -62,9 +62,6 @@ TIN_START_TEST(vector)
 	TIN_NAMED_CHECK("INT - vec1 - vec2", (vec1 - vec2) == turbolin::Vector<int, 4> {0, 0, 0, 0});
 	TIN_NAMED_CHECK("INT - vec1 * vec2", (vec1 * vec2) == turbolin::Vector<int, 4> {1, 4, 9, 16});
 
-	vec1 = {1, 2, 3, 4};
-	vec2 = {1, 2, 3, 4};
-
 	TIN_NAMED_CHECK("INT - dot product vec1/vec2", turbolin::dot(vec1, vec2) == 30);
 }
 TIN_END_TEST(vector, "Test of Turbolin's vector implementation")
