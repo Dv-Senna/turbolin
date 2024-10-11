@@ -6,8 +6,7 @@
 
 
 
-TIN_START_TEST(vector)
-{
+TIN_START_TEST(float_vector)
 	turbolin::Vector<float, 4> vec0 {};
 	turbolin::Vector<float, 4> vec1 {1.f, 2.f, 3.f, 4.f};
 	turbolin::Vector<float, 2> vec2_tmp {1.f, 2.f};
@@ -34,9 +33,9 @@ TIN_START_TEST(vector)
 	TIN_NAMED_CHECK("FLOAT - vec1 * vec2", (vec1 * vec2) == turbolin::Vector<float, 4> {1.f, 4.f, 9.f, 16.f});
 
 	TIN_NAMED_CHECK("FLOAT - dot product vec1/vec2", turbolin::dot(vec1, vec2) == 30.f);
-}
+TIN_END_TEST(float_vector, "Test of Turbolin's float vector implementation")
 
-{
+TIN_START_TEST(int_vector)
 	turbolin::Vector<int, 4> vec0 {};
 	turbolin::Vector<int, 4> vec1 {1, 2, 3, 4};
 	turbolin::Vector<int, 2> vec2_tmp {1, 2};
@@ -63,6 +62,5 @@ TIN_START_TEST(vector)
 	TIN_NAMED_CHECK("INT - vec1 * vec2", (vec1 * vec2) == turbolin::Vector<int, 4> {1, 4, 9, 16});
 
 	TIN_NAMED_CHECK("INT - dot product vec1/vec2", turbolin::dot(vec1, vec2) == 30);
-}
-TIN_END_TEST(vector, "Test of Turbolin's vector implementation")
+TIN_END_TEST(int_vector, "Test of Turbolin's int vector implementation")
 
