@@ -120,6 +120,8 @@ namespace turbolin {
 	template <turbolin::IsVectorType T, turbolin::IsVectorType T2, std::size_t D>
 	T dot(const turbolin::Vector<T, D> &lhs, const turbolin::Vector<T2, D> &rhs);
 
+	template <turbolin::IsVectorType T, turbolin::IsVectorType T2>
+	turbolin::Vector<T, 3> cross(const turbolin::Vector<T, 3> &lhs, const turbolin::Vector<T2, 3> &rhs);
 
 } // namespace turbolin
 

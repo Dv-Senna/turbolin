@@ -295,4 +295,63 @@ namespace turbolin {
 	}
 
 
+	template <turbolin::IsVectorType T, turbolin::IsVectorType T2>
+	turbolin::Vector<T, 3> cross(const turbolin::Vector<T, 3> &lhs, const turbolin::Vector<T2, 3> &rhs) {
+		turbolin::Vector<T, 3> output {};
+
+		if constexpr (std::is_same_v<T, float>) {
+			__m128 r1 {};
+			__m128 r2 {};
+
+			if constexpr (std::is_same_v<T, T2>) {
+				r1 = _mm_load_ps(reinterpret_cast<const float*> (&lhs));
+				r2 = _mm_load_ps(reinterpret_cast<const float*> (&rhs));
+			}
+			else {
+				r1 = _mm_load_ps(reinterpret_cast<const float*> (&lhs));
+				__m128i r3 {_mm_load_si128(reinterpret_cast<const __m128i*> (&rhs))};
+				r2 = _mm_cvtepi32_ps(r3);
+			}
+
+			__m128 shuf1_pos {_mm_shuffle_ps(r1, r1, _MM_SHUFFLE(3, 0, 2, 1))};
+			__m128 shuf1_neg {_mm_shuffle_ps(r1, r1, _MM_SHUFFLE(3, 1, 0, 2))};
+			__m128 shuf2_pos {_mm_shuffle_ps(r2, r2, _MM_SHUFFLE(3, 1, 0, 2))};
+			__m128 shuf2_neg {_mm_shuffle_ps(r2, r2, _MM_SHUFFLE(3, 0, 2, 1))};
+
+			__m128 mul_pos {_mm_mul_ps(shuf1_pos, shuf2_pos)};
+			__m128 mul_neg {_mm_mul_ps(shuf1_neg, shuf2_neg)};
+
+			__m128 res {_mm_sub_ps(mul_pos, mul_neg)};
+			_mm_store_ps(reinterpret_cast<float*> (&output), res);
+			return output;
+		}
+		else {
+			__m128i r1 {};
+			__m128i r2 {};
+
+			if constexpr (std::is_same_v<T, T2>) {
+				r1 = _mm_load_si128(reinterpret_cast<const __m128i*> (&lhs));
+				r2 = _mm_load_si128(reinterpret_cast<const __m128i*> (&rhs));
+			}
+			else {
+				r1 = _mm_load_si128(reinterpret_cast<const __m128i*> (&lhs));
+				__m128 r3 {_mm_load_ps(reinterpret_cast<const float*> (&rhs))};
+				r2 = _mm_cvtps_epi32(r3);
+			}
+
+			__m128i shuf1_pos {_mm_shuffle_epi32(r1, _MM_SHUFFLE(3, 0, 2, 1))};
+			__m128i shuf1_neg {_mm_shuffle_epi32(r1, _MM_SHUFFLE(3, 1, 0, 2))};
+			__m128i shuf2_pos {_mm_shuffle_epi32(r2, _MM_SHUFFLE(3, 1, 0, 2))};
+			__m128i shuf2_neg {_mm_shuffle_epi32(r2, _MM_SHUFFLE(3, 0, 2, 1))};
+
+			__m128i mul_pos {_mm_mullo_epi32(shuf1_pos, shuf2_pos)};
+			__m128i mul_neg {_mm_mullo_epi32(shuf1_neg, shuf2_neg)};
+
+			__m128i res {_mm_sub_epi32(mul_pos, mul_neg)};
+			_mm_store_si128(reinterpret_cast<__m128i*> (&output), res);
+			return output;
+		}
+	}
+
+
 } // namespace turbolin
