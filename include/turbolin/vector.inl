@@ -11,8 +11,8 @@
 
 
 namespace turbolin {
-	template <turbolin::IsVectorType T, std::size_t D>
-	template <turbolin::IsVectorType ...Args>
+	template <turbolin::VectorType T, std::size_t D>
+	template <turbolin::VectorType ...Args>
 	Vector<T, D>::Vector(Args&& ...args) noexcept {
 		static_assert(sizeof...(Args) <= D, "Can't initialize a D-vector with more than D values");
 
@@ -34,8 +34,8 @@ namespace turbolin {
 	}
 
 
-	template <turbolin::IsVectorType T, std::size_t D>
-	template <turbolin::IsVectorType T2, std::size_t D2, turbolin::IsVectorType ...Args>
+	template <turbolin::VectorType T, std::size_t D>
+	template <turbolin::VectorType T2, std::size_t D2, turbolin::VectorType ...Args>
 	Vector<T, D>::Vector(const turbolin::Vector<T2, D2> &vector, Args&& ...args) noexcept : Vector<T, D> () {
 		static_assert(D2 + sizeof...(Args) <= D, "Can't initialize a D-vector with more than D values");
 
@@ -63,8 +63,8 @@ namespace turbolin {
 	}
 
 
-	template <turbolin::IsVectorType T, std::size_t D>
-	template <turbolin::IsVectorType T2>
+	template <turbolin::VectorType T, std::size_t D>
+	template <turbolin::VectorType T2>
 	const turbolin::Vector<T, D> &Vector<T, D>::operator=(const turbolin::Vector<T2, D> &vector) noexcept {
 		if constexpr (std::is_same_v<T, T2>) {
 			std::memcpy(this, &vector, sizeof(T) * D);
@@ -86,8 +86,8 @@ namespace turbolin {
 	}
 
 
-	template <turbolin::IsVectorType T, std::size_t D>
-	template <turbolin::IsVectorType T2>
+	template <turbolin::VectorType T, std::size_t D>
+	template <turbolin::VectorType T2>
 	bool Vector<T, D>::operator==(const turbolin::Vector<T2, D> &vector) const noexcept {
 		if constexpr (std::is_same_v<T, T2>) {
 			if constexpr (std::is_same_v<T, float>) {
@@ -122,8 +122,8 @@ namespace turbolin {
 	}
 
 
-	template <turbolin::IsVectorType T, std::size_t D>
-	template <turbolin::IsVectorType T2>
+	template <turbolin::VectorType T, std::size_t D>
+	template <turbolin::VectorType T2>
 	const turbolin::Vector<T, D> &Vector<T, D>::operator+=(const turbolin::Vector<T2, D> &vector) noexcept {
 		if constexpr (std::is_same_v<T, float>) {
 			__m128 r1 {};
@@ -164,8 +164,8 @@ namespace turbolin {
 	}
 
 
-	template <turbolin::IsVectorType T, std::size_t D>
-	template <turbolin::IsVectorType T2>
+	template <turbolin::VectorType T, std::size_t D>
+	template <turbolin::VectorType T2>
 	const turbolin::Vector<T, D> &Vector<T, D>::operator-=(const turbolin::Vector<T2, D> &vector) noexcept {
 		if constexpr (std::is_same_v<T, float>) {
 			__m128 r1 {};
@@ -206,8 +206,8 @@ namespace turbolin {
 	}
 
 
-	template <turbolin::IsVectorType T, std::size_t D>
-	template <turbolin::IsVectorType T2>
+	template <turbolin::VectorType T, std::size_t D>
+	template <turbolin::VectorType T2>
 	const turbolin::Vector<T, D> &Vector<T, D>::operator*=(const turbolin::Vector<T2, D> &vector) noexcept {
 		if constexpr (std::is_same_v<T, float>) {
 			__m128 r1 {};
@@ -248,7 +248,7 @@ namespace turbolin {
 	}
 
 
-	template <turbolin::IsVectorType T, turbolin::IsVectorType T2, std::size_t D>
+	template <turbolin::VectorType T, turbolin::VectorType T2, std::size_t D>
 	T dot(const turbolin::Vector<T, D> &lhs, const turbolin::Vector<T2, D> &rhs) {
 		if constexpr (std::is_same_v<T, float>) {
 			__m128 r1 {};
@@ -295,7 +295,7 @@ namespace turbolin {
 	}
 
 
-	template <turbolin::IsVectorType T, turbolin::IsVectorType T2>
+	template <turbolin::VectorType T, turbolin::VectorType T2>
 	turbolin::Vector<T, 3> cross(const turbolin::Vector<T, 3> &lhs, const turbolin::Vector<T2, 3> &rhs) {
 		turbolin::Vector<T, 3> output {};
 
@@ -351,6 +351,22 @@ namespace turbolin {
 			_mm_store_si128(reinterpret_cast<__m128i*> (&output), res);
 			return output;
 		}
+	}
+
+
+	template <turbolin::VectorType T, std::size_t D>
+	std::ostream &operator<<(std::ostream &stream, const turbolin::Vector<T, D> &vector) {
+		if constexpr (D == 2) {
+			stream << "(" << vector.x << ", " << vector.y << ")";
+		}
+		else if constexpr (D == 3) {
+			stream << "(" << vector.x << ", " << vector.y << ", " << vector.z << ")";
+		}
+		else if constexpr (D == 4) {
+			stream << "(" << vector.x << ", " << vector.y << ", " << vector.z << ", " << vector.w << ")";
+		}
+
+		return stream;
 	}
 
 

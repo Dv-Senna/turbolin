@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cinttypes>
+#include <ostream>
 #include <type_traits>
 
 
@@ -8,7 +9,7 @@
 namespace turbolin {
 	namespace {
 		template <typename T>
-		concept IsVectorType = std::is_same_v<float, T> || std::is_same_v<std::int32_t, T>;
+		concept VectorType = std::is_same_v<float, T> || std::is_same_v<std::int32_t, T>;
 
 		template <typename T>
 		struct VectorAlignement {
@@ -16,10 +17,10 @@ namespace turbolin {
 		};
 
 
-		template <turbolin::IsVectorType T, std::size_t D>
+		template <turbolin::VectorType T, std::size_t D>
 		struct VectorLayout;
 
-		template <turbolin::IsVectorType T>
+		template <turbolin::VectorType T>
 		struct VectorLayout<T, 2> {
 			union {
 				T x;
@@ -37,7 +38,7 @@ namespace turbolin {
 				T __padding[2];
 		};
 
-		template <turbolin::IsVectorType T>
+		template <turbolin::VectorType T>
 		struct VectorLayout<T, 3> {
 			union {
 				T x;
@@ -61,7 +62,7 @@ namespace turbolin {
 				T __padding[1];
 		};
 
-		template <turbolin::IsVectorType T>
+		template <turbolin::VectorType T>
 		struct VectorLayout<T, 4> {
 			union {
 				T x;
@@ -87,41 +88,44 @@ namespace turbolin {
 	} // namespace
 
 
-	template <turbolin::IsVectorType T, std::size_t D>
+	template <turbolin::VectorType T, std::size_t D>
 	class alignas(turbolin::VectorAlignement<T>::alignment) Vector : public turbolin::VectorLayout<T, D> {
 		public:
-			template <turbolin::IsVectorType ...Args>
+			template <turbolin::VectorType ...Args>
 			Vector(Args&& ...args) noexcept;
 
-			template <turbolin::IsVectorType T2, std::size_t D2, turbolin::IsVectorType ...Args>
+			template <turbolin::VectorType T2, std::size_t D2, turbolin::VectorType ...Args>
 			Vector(const turbolin::Vector<T2, D2> &vector, Args&& ...args) noexcept;
-			template <turbolin::IsVectorType T2>
+			template <turbolin::VectorType T2>
 			const turbolin::Vector<T, D> &operator=(const turbolin::Vector<T2, D> &vector) noexcept;
 
-			template <turbolin::IsVectorType T2>
+			template <turbolin::VectorType T2>
 			bool operator==(const turbolin::Vector<T2, D> &vector) const noexcept;
 
-			template <turbolin::IsVectorType T2>
+			template <turbolin::VectorType T2>
 			const turbolin::Vector<T, D> &operator+=(const turbolin::Vector<T2, D> &vector) noexcept;
-			template <turbolin::IsVectorType T2>
+			template <turbolin::VectorType T2>
 			const turbolin::Vector<T, D> &operator-=(const turbolin::Vector<T2, D> &vector) noexcept;
-			template <turbolin::IsVectorType T2>
+			template <turbolin::VectorType T2>
 			const turbolin::Vector<T, D> &operator*=(const turbolin::Vector<T2, D> &vector) noexcept;
 
-			template <turbolin::IsVectorType T2>
+			template <turbolin::VectorType T2>
 			inline turbolin::Vector<T, D> operator+(const turbolin::Vector<T2, D> &vector) const noexcept {auto copy {*this}; return copy += vector;}
-			template <turbolin::IsVectorType T2>
+			template <turbolin::VectorType T2>
 			inline turbolin::Vector<T, D> operator-(const turbolin::Vector<T2, D> &vector) const noexcept {auto copy {*this}; return copy -= vector;}
-			template <turbolin::IsVectorType T2>
+			template <turbolin::VectorType T2>
 			inline turbolin::Vector<T, D> operator*(const turbolin::Vector<T2, D> &vector) const noexcept {auto copy {*this}; return copy *= vector;}
 	};
 
 
-	template <turbolin::IsVectorType T, turbolin::IsVectorType T2, std::size_t D>
+	template <turbolin::VectorType T, turbolin::VectorType T2, std::size_t D>
 	T dot(const turbolin::Vector<T, D> &lhs, const turbolin::Vector<T2, D> &rhs);
 
-	template <turbolin::IsVectorType T, turbolin::IsVectorType T2>
+	template <turbolin::VectorType T, turbolin::VectorType T2>
 	turbolin::Vector<T, 3> cross(const turbolin::Vector<T, 3> &lhs, const turbolin::Vector<T2, 3> &rhs);
+
+	template <turbolin::VectorType T, std::size_t D>
+	std::ostream &operator<<(std::ostream &stream, const turbolin::Vector<T, D> &vector);
 
 } // namespace turbolin
 
