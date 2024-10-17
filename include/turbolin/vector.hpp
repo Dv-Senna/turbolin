@@ -4,6 +4,10 @@
 #include <ostream>
 #include <type_traits>
 
+#ifdef __cpp_lib_format
+	#include <format>
+#endif
+
 
 
 namespace turbolin {
@@ -128,6 +132,30 @@ namespace turbolin {
 	std::ostream &operator<<(std::ostream &stream, const turbolin::Vector<T, D> &vector);
 
 } // namespace turbolin
+
+
+#ifdef __cpp_lib_format
+	template <turbolin::VectorType T, std::size_t D>
+	struct std::formatter<turbolin::Vector<T, D>> {
+		constexpr auto parse(std::format_parse_context &ctx) {
+			if (*ctx.begin() != '}')
+				throw std::format_error("turbolin::Vector does not accept any format args");
+			return ctx.begin();
+		}
+
+		auto format(const turbolin::Vector<T, D> &vector, std::format_context &ctx) const {
+			if constexpr (D == 2) {
+				return std::format_to(ctx.out(), "({}, {})", vector.x, vector.y);
+			}
+			else if constexpr (D == 3) {
+				return std::format_to(ctx.out(), "({}, {}, {})", vector.x, vector.y, vector.z);
+			}
+			else {
+				return std::format_to(ctx.out(), "({}, {}, {}, {})", vector.x, vector.y, vector.z, vector.w);
+			}
+		}
+	};
+#endif
 
 
 #include "turbolin/vector.inl"
