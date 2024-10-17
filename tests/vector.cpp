@@ -46,10 +46,6 @@ TIN_START_TEST(float_vector)
 	TIN_NAMED_CHECK("cross product vec4/vec3", turbolin::cross(vec4, vec3) == turbolin::Vector<float, 3> {1.f, -2.f, 1.f});
 	TIN_NAMED_CHECK("cross product vec3/vec5", turbolin::cross(vec3, vec5) == turbolin::Vector<float, 3> {15.5f, -11.5f, 2.5f});
 	TIN_NAMED_CHECK("cross product vec5/vec3", turbolin::cross(vec5, vec3) == turbolin::Vector<float, 3> {-15.5f, 11.5f, -2.5f});
-
-
-	std::cout << std::format("This is my vector {} and Idk", vec1) << std::endl;
-
 TIN_END_TEST(float_vector, "Test of Turbolin's float vector implementation")
 
 TIN_START_TEST(int_vector)
