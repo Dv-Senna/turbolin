@@ -37,6 +37,7 @@ build/*
 # Editor-specific
 .vscode/*
 .clangd
+.cache/*
 
 # Root folder scripts
 *.sh

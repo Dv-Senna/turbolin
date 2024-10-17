@@ -16,6 +16,10 @@ TIN_START_TEST(float_vector)
 	TIN_NAMED_MANDATORY_CHECK("vec1 init", ((float*)(&vec1))[0] == 1.f && ((float*)(&vec1))[1] == 2.f && ((float*)(&vec1))[2] == 3.f && ((float*)(&vec1))[3] == 4.f);
 	TIN_NAMED_MANDATORY_CHECK("vec2 init", ((float*)(&vec2))[0] == 1.f && ((float*)(&vec2))[1] == 2.f && ((float*)(&vec2))[2] == 3.f && ((float*)(&vec2))[3] == 4.f);
 
+	TIN_NAMED_MANDATORY_CHECK("vec0 alignment check", (std::size_t)(&vec0) % 16 == 0);
+	TIN_NAMED_MANDATORY_CHECK("vec1 alignment check", (std::size_t)(&vec1) % 16 == 0);
+	TIN_NAMED_MANDATORY_CHECK("vec2 alignment check", (std::size_t)(&vec2) % 16 == 0);
+
 	TIN_NAMED_MANDATORY_CHECK("vec0 self equality", vec0 == vec0);
 	TIN_NAMED_MANDATORY_CHECK("vec1 self equality", vec1 == vec1);
 
@@ -57,6 +61,10 @@ TIN_START_TEST(int_vector)
 	TIN_NAMED_MANDATORY_CHECK("vec0 init", ((int*)(&vec0))[0] == 0 && ((int*)(&vec0))[1] == 0 && ((int*)(&vec0))[2] == 0 && ((int*)(&vec0))[3] == 0);
 	TIN_NAMED_MANDATORY_CHECK("vec1 init", ((int*)(&vec1))[0] == 1 && ((int*)(&vec1))[1] == 2 && ((int*)(&vec1))[2] == 3 && ((int*)(&vec1))[3] == 4);
 	TIN_NAMED_MANDATORY_CHECK("vec2 init", ((int*)(&vec2))[0] == 1 && ((int*)(&vec2))[1] == 2 && ((int*)(&vec2))[2] == 3 && ((int*)(&vec2))[3] == 4);
+
+	TIN_NAMED_MANDATORY_CHECK("vec0 alignment check", (std::size_t)(&vec0) % 16 == 0)
+	TIN_NAMED_MANDATORY_CHECK("vec1 alignment check", (std::size_t)(&vec1) % 16 == 0);
+	TIN_NAMED_MANDATORY_CHECK("vec2 alignment check", (std::size_t)(&vec2) % 16 == 0);
 
 	TIN_NAMED_MANDATORY_CHECK("vec0 self equality", vec0 == vec0);
 	TIN_NAMED_MANDATORY_CHECK("vec1 self equality", vec1 == vec1);
