@@ -32,8 +32,13 @@ namespace turbolin {
 			}
 		}
 		else {
-			std::array<T, D >= 3 ? 16 : 8> tmp {static_cast<T> (args)...};
-			(void)std::memmove(this, tmp.data(), sizeof(T) * tmp.size());
+			std::size_t i {0};
+			([&] () {
+				std::size_t row {i % D};
+				std::size_t column {i / D};
+				std::size_t position {column * 4 + row};
+				reinterpret_cast<T*> (this)[position] = args;
+			}(), ...);
 		}
 	}
 
