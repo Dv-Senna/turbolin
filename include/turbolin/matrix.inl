@@ -83,5 +83,71 @@ namespace turbolin {
 	}
 
 
+	template <turbolin::MatrixType T, std::size_t D>
+	template <turbolin::MatrixType T2>
+	bool Matrix<T, D>::operator==(const turbolin::Matrix<T2, D> &matrix) const noexcept {
+		if constexpr (std::is_same_v<T, T2>) {
+			if constexpr (std::is_same_v<T, float>) {
+				__m256 r1 {_mm256_load_ps(reinterpret_cast<const float*> (this))};
+				__m256 r2 {_mm256_load_ps(reinterpret_cast<const float*> (&matrix))};
+				r1 = _mm256_cmp_ps(r1, r2, _CMP_EQ_OQ);
+				bool result {_mm256_movemask_ps(r1) == 0xff};
+				if constexpr (D >= 3) {
+					r1 = _mm256_load_ps(reinterpret_cast<const float*> (this) + 8);
+					r2 = _mm256_load_ps(reinterpret_cast<const float*> (&matrix) + 8);
+					r1 = _mm256_cmp_ps(r1, r2, _CMP_EQ_OQ);
+					result = result && _mm256_movemask_ps(r1) == 0xff;
+				}
+				return result;
+			}
+			else {
+				__m256i r1 {_mm256_load_si256(reinterpret_cast<const __m256i*> (this))};
+				__m256i r2 {_mm256_load_si256(reinterpret_cast<const __m256i*> (&matrix))};
+				r1 = _mm256_cmpeq_epi32(r1, r2);
+				bool result {_mm256_movemask_epi8(r1) == 0xffffffff};
+				if constexpr (D >= 3) {
+					r1 = _mm256_load_si256(reinterpret_cast<const __m256i*> (reinterpret_cast<const int*> (this) + 8));
+					r2 = _mm256_load_si256(reinterpret_cast<const __m256i*> (reinterpret_cast<const int*> (&matrix) + 8));
+					r1 = _mm256_cmpeq_epi32(r1, r2);
+					result = result && _mm256_movemask_epi8(r1) == 0xffffffff;
+				}
+				return result;
+			}
+		}
+		else {
+			if constexpr (std::is_same_v<T, float>) {
+				__m256 r1 {_mm256_load_ps(reinterpret_cast<const float*> (this))};
+				__m256i r3 {_mm256_load_si256(reinterpret_cast<const __m256i*> (&matrix))};
+				__m256 r2 {_mm256_cvtepi32_ps(r3)};
+				r1 = _mm256_cmp_ps(r1, r2, _CMP_EQ_OQ);
+				bool result {_mm256_movemask_ps(r1) == 0xff};
+				if constexpr (D >= 3) {
+					r1 = _mm256_load_ps(reinterpret_cast<const float*> (this) + 8);
+					r3 = _mm256_load_si256(reinterpret_cast<const __m256i*> (reinterpret_cast<const int*> (&matrix + 8)));
+					r2 = _mm256_cvtepi32_ps(r3);
+					r1 = _mm256_cmp_ps(r1, r2, _CMP_EQ_OQ);
+					result = result && _mm256_movemask_ps(r1) == 0xff;
+				}
+				return result;
+			}
+			else {
+				__m256i r1 {_mm256_load_si256(reinterpret_cast<const __m256i*> (this))};
+				__m256 r3 {_mm256_load_ps(reinterpret_cast<const float*> (&matrix))};
+				__m256i r2 {_mm256_cvtps_epi32(r3)};
+				r1 = _mm256_cmpeq_epi32(r1, r2);
+				bool result {_mm256_movemask_epi8(r1) == 0xffffffff};
+				if constexpr (D >= 3) {
+					r1 = _mm256_load_si256(reinterpret_cast<const __m256i*> (reinterpret_cast<const int*> (this) + 8));
+					r3 = _mm256_load_ps(reinterpret_cast<const float*> (&matrix) + 8);
+					r2 = _mm256_cvtps_epi32(r3);
+					r1 = _mm256_cmpeq_epi32(r1, r2);
+					result = result && _mm256_movemask_epi8(r1) == 0xffffffff;
+				}
+				return result;
+			}
+		}
+	}
+
+
 } // namespace turbolin
 

@@ -73,6 +73,30 @@ TIN_START_TEST(float_matrix)
 			&& ((float*)&mat4_2)[12] == 0 && ((float*)&mat4_2)[13] == 0 && ((float*)&mat4_2)[14] == 0 && ((float*)&mat4_2)[15] == 0
 		);
 	}
+
+
+	turbolin::Matrix<float, 2> mat2_0 {};
+	turbolin::Matrix<float, 3> mat3_0 {};
+	turbolin::Matrix<float, 4> mat4_0 {};
+
+	turbolin::Matrix<float, 2> mat2_1 {1.f, 2.f, 3.f, 4.f};
+	turbolin::Matrix<float, 3> mat3_1 {1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f};
+	turbolin::Matrix<float, 4> mat4_1 {1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f, 10.f, 11.f, 12.f, 13.f, 14.f, 15.f, 16.f};
+
+	TIN_NAMED_MANDATORY_CHECK("mat2_0 - mat2_0 : equality check",   mat2_0 == mat2_0);
+	TIN_NAMED_MANDATORY_CHECK("mat2_1 - mat2_1 : equality check",   mat2_1 == mat2_1);
+	TIN_NAMED_MANDATORY_CHECK("mat2_1 - mat2_0 : inequality check", mat2_1 != mat2_0);
+	TIN_NAMED_MANDATORY_CHECK("mat2_0 - mat2_1 : inequality check", mat2_0 != mat2_1);
+
+	TIN_NAMED_MANDATORY_CHECK("mat3_0 - mat3_0 : equality check",   mat3_0 == mat3_0);
+	TIN_NAMED_MANDATORY_CHECK("mat3_1 - mat3_1 : equality check",   mat3_1 == mat3_1);
+	TIN_NAMED_MANDATORY_CHECK("mat3_1 - mat3_0 : inequality check", mat3_1 != mat3_0);
+	TIN_NAMED_MANDATORY_CHECK("mat3_0 - mat3_1 : inequality check", mat3_0 != mat3_1);
+
+	TIN_NAMED_MANDATORY_CHECK("mat4_0 - mat4_0 : equality check",   mat4_0 == mat4_0);
+	TIN_NAMED_MANDATORY_CHECK("mat4_1 - mat4_1 : equality check",   mat4_1 == mat4_1);
+	TIN_NAMED_MANDATORY_CHECK("mat4_1 - mat4_0 : inequality check", mat4_1 != mat4_0);
+	TIN_NAMED_MANDATORY_CHECK("mat4_0 - mat4_1 : inequality check", mat4_0 != mat4_1);
 TIN_END_TEST(float_matrix, "Test of Turbolin's float matrix implementation")
 
 
@@ -144,4 +168,34 @@ TIN_START_TEST(int_matrix)
 			&& ((int*)&mat4_2)[12] == 0 && ((int*)&mat4_2)[13] == 0 && ((int*)&mat4_2)[14] == 0 && ((int*)&mat4_2)[15] == 0
 		);
 	}
-TIN_END_TEST(int_matrix, "Test of Turbolin's int matrix implementation")
+
+
+	turbolin::Matrix<int, 2> mat2_0 {};
+	turbolin::Matrix<int, 3> mat3_0 {};
+	turbolin::Matrix<int, 4> mat4_0 {};
+
+	turbolin::Matrix<int, 2> mat2_1 {1, 2, 3, 4};
+	turbolin::Matrix<int, 3> mat3_1 {1, 2, 3, 4, 5, 6, 7, 8, 9};
+	turbolin::Matrix<int, 4> mat4_1 {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+
+	TIN_NAMED_MANDATORY_CHECK("mat2_0 - mat2_0 : equality check",   mat2_0 == mat2_0);
+	TIN_NAMED_MANDATORY_CHECK("mat2_1 - mat2_1 : equality check",   mat2_1 == mat2_1);
+	TIN_NAMED_MANDATORY_CHECK("mat2_1 - mat2_0 : inequality check", mat2_1 != mat2_0);
+	TIN_NAMED_MANDATORY_CHECK("mat2_0 - mat2_1 : inequality check", mat2_0 != mat2_1);
+
+	TIN_NAMED_MANDATORY_CHECK("mat3_0 - mat3_0 : equality check",   mat3_0 == mat3_0);
+	TIN_NAMED_MANDATORY_CHECK("mat3_1 - mat3_1 : equality check",   mat3_1 == mat3_1);
+	TIN_NAMED_MANDATORY_CHECK("mat3_1 - mat3_0 : inequality check", mat3_1 != mat3_0);
+	TIN_NAMED_MANDATORY_CHECK("mat3_0 - mat3_1 : inequality check", mat3_0 != mat3_1);
+
+	TIN_NAMED_MANDATORY_CHECK("mat4_0 - mat4_0 : equality check",   mat4_0 == mat4_0);
+	TIN_NAMED_MANDATORY_CHECK("mat4_1 - mat4_1 : equality check",   mat4_1 == mat4_1);
+	TIN_NAMED_MANDATORY_CHECK("mat4_1 - mat4_0 : inequality check", mat4_1 != mat4_0);
+	TIN_NAMED_MANDATORY_CHECK("mat4_0 - mat4_1 : inequality check", mat4_0 != mat4_1);
+
+	{
+		turbolin::Matrix<float, 4> mat4_0f {};
+		TIN_NAMED_MANDATORY_CHECK("mix type equality check", mat4_0f == mat4_0);
+		TIN_NAMED_MANDATORY_CHECK("mix type equality check", mat4_0 == mat4_0f);
+	}
+TIN_END_TEST(int_matrix, "Test  Turbolin's int matrix implementation")
