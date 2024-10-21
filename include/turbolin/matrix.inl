@@ -32,7 +32,20 @@ namespace turbolin {
 			}
 		}
 
-		if constexpr (sizeof...(Args) != 0) {
+		if constexpr (sizeof...(Args) == 1) {
+			std::size_t i {0};
+			([&] () {
+				reinterpret_cast<T*> (this)[0] = static_cast<T> (args);
+				reinterpret_cast<T*> (this)[5] = static_cast<T> (args);
+				if constexpr (D >= 3) {
+					reinterpret_cast<T*> (this)[10] = static_cast<T> (args);
+				}
+				if constexpr (D >= 4) {
+					reinterpret_cast<T*> (this)[15] = static_cast<T> (args);
+				}
+			}(), ...);
+		}
+		else if constexpr (sizeof...(Args) != 0) {
 			std::size_t i {0};
 			([&] () {
 				std::size_t row {i % D};
@@ -123,7 +136,7 @@ namespace turbolin {
 				bool result {_mm256_movemask_ps(r1) == 0xff};
 				if constexpr (D >= 3) {
 					r1 = _mm256_load_ps(reinterpret_cast<const float*> (this) + 8);
-					r3 = _mm256_load_si256(reinterpret_cast<const __m256i*> (reinterpret_cast<const int*> (&matrix + 8)));
+					r3 = _mm256_load_si256(reinterpret_cast<const __m256i*> (reinterpret_cast<const int*> (&matrix) + 8));
 					r2 = _mm256_cvtepi32_ps(r3);
 					r1 = _mm256_cmp_ps(r1, r2, _CMP_EQ_OQ);
 					result = result && _mm256_movemask_ps(r1) == 0xff;
