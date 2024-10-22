@@ -128,6 +128,17 @@ TIN_START_TEST(float_matrix)
 	TIN_NAMED_CHECK("mat4_1 -= mat4_2", (mat4_1 -= mat4_2) == turbolin::Matrix<float, 4> (1.f, 2.f, 3.f, 4.f, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16));
 //	TIN_NAMED_CHECK("mat4_1 *= mat4_2", (mat4_1 *= mat4_2) == turbolin::Matrix<float, 4> (2.f, 4.f, 3.f, 4.f));
 
+	mat2_1 = turbolin::Matrix<float, 2> (1.f, 2.f, 3.f, 4.f);
+	mat4_1 = turbolin::Matrix<float, 4> (1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f, 10.f, 11.f, 12.f, 13.f, 14.f, 15.f, 16.f);
+
+	TIN_NAMED_CHECK("mat2_1 + mat2_2", mat2_1 + mat2_2 == turbolin::Matrix<float, 2> (2.f, 4.f, 3.f, 4.f));
+	TIN_NAMED_CHECK("mat2_1 - mat2_2", mat2_1 - mat2_2 == turbolin::Matrix<float, 2> (0.f, 0.f, 3.f, 4.f));
+//	TIN_NAMED_CHECK("mat2_1 + mat2_2", mat2_1 + mat2_2 == turbolin::Matrix<float, 2> ());
+
+	TIN_NAMED_CHECK("mat4_1 + mat4_2", mat4_1 + mat4_2 == turbolin::Matrix<float, 4> (2.f, 4.f, 6.f, 8.f, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16));
+	TIN_NAMED_CHECK("mat4_1 - mat4_2", mat4_1 - mat4_2 == turbolin::Matrix<float, 4> (0.f, 0.f, 0.f, 0.f, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16));
+//	TIN_NAMED_CHECK("mat4_1 + mat4_2", mat4_1 + mat4_2 == turbolin::Matrix<float, 4> ());
+
 TIN_END_TEST(float_matrix, "Test of Turbolin's float matrix implementation")
 
 
@@ -260,4 +271,16 @@ TIN_START_TEST(int_matrix)
 	TIN_NAMED_CHECK("mat4_1 += mat4_2", (mat4_1 += mat4_2) == turbolin::Matrix<int, 4> (2, 4, 6, 8, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16));
 	TIN_NAMED_CHECK("mat4_1 -= mat4_2", (mat4_1 -= mat4_2) == turbolin::Matrix<int, 4> (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16));
 //	TIN_NAMED_CHECK("mat4_1 *= mat4_2", (mat4_1 *= mat4_2) == turbolin::Matrix<float, 4> (2.f, 4.f, 3.f, 4.f));
+
+
+	mat2_1 = turbolin::Matrix<int, 2> (1, 2, 3, 4);
+	mat4_1 = turbolin::Matrix<int, 4> (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+
+	TIN_NAMED_CHECK("mat2_1 + mat2_2", mat2_1 + mat2_2 == turbolin::Matrix<int, 2> (2, 4, 3, 4));
+	TIN_NAMED_CHECK("mat2_1 - mat2_2", mat2_1 - mat2_2 == turbolin::Matrix<int, 2> (0, 0, 3, 4));
+//	TIN_NAMED_CHECK("mat2_1 + mat2_2", mat2_1 + mat2_2 == turbolin::Matrix<int, 2> ());
+
+	TIN_NAMED_CHECK("mat4_1 + mat4_2", mat4_1 + mat4_2 == turbolin::Matrix<int, 4> (2, 4, 6, 8, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16));
+	TIN_NAMED_CHECK("mat4_1 - mat4_2", mat4_1 - mat4_2 == turbolin::Matrix<int, 4> (0, 0, 0, 0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16));
+//	TIN_NAMED_CHECK("mat4_1 + mat4_2", mat4_1 + mat4_2 == turbolin::Matrix<int, 4> ());
 TIN_END_TEST(int_matrix, "Test  Turbolin's int matrix implementation")

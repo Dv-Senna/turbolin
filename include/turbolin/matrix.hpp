@@ -69,6 +69,13 @@ namespace turbolin {
 			const turbolin::Matrix<T, D> &operator-=(const turbolin::Matrix<T2, D> &matrix);
 			template <turbolin::MatrixType T2>
 			const turbolin::Matrix<T, D> &operator*=(const turbolin::Matrix<T2, D> &matrix);
+
+			template <turbolin::MatrixType T2>
+			inline turbolin::Matrix<T, D> operator+(const turbolin::Matrix<T2, D> &matrix) {auto copy {*this}; return copy += matrix;}
+			template <turbolin::MatrixType T2>
+			inline turbolin::Matrix<T, D> operator-(const turbolin::Matrix<T2, D> &matrix) {auto copy {*this}; return copy -= matrix;}
+			template <turbolin::MatrixType T2>
+			inline turbolin::Matrix<T, D> operator*(const turbolin::Matrix<T2, D> &matrix) {auto copy {*this}; return copy *= matrix;}
 	};
 
 } // namespace turbolin
