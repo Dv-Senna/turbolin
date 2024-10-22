@@ -164,18 +164,64 @@ namespace turbolin {
 			__m256 r1 {_mm256_load_ps(reinterpret_cast<const float*> (this))};
 			__m256 r2 {};
 			turbolin::_loadAVXRegister(&r2, reinterpret_cast<const T2*> (&matrix));
-
+			r1 = _mm256_add_ps(r1, r2);
+			_mm256_store_ps(reinterpret_cast<float*> (this), r1);
+			if constexpr (D >= 3) {
+				r1 = _mm256_load_ps(reinterpret_cast<const float*> (this) + 8);
+				turbolin::_loadAVXRegister(&r2, reinterpret_cast<const T2*> (&matrix) + 8);
+				r1 = _mm256_add_ps(r1, r2);
+				_mm256_store_ps(reinterpret_cast<float*> (this) + 8, r1);
+			}
 		}
 		else {
-
+			__m256i r1 {_mm256_load_si256(reinterpret_cast<const __m256i*> (this))};
+			__m256i r2 {};
+			turbolin::_loadAVXRegister(&r2, reinterpret_cast<const T2*> (&matrix));
+			r1 = _mm256_add_epi32(r1, r2);
+			_mm256_store_si256(reinterpret_cast<__m256i*> (this), r1);
+			if constexpr (D >= 3) {
+				r1 = _mm256_load_si256(reinterpret_cast<const __m256i*> (reinterpret_cast<const int*> (this) + 8));
+				turbolin::_loadAVXRegister(&r2, reinterpret_cast<const T2*> (&matrix) + 8);
+				r1 = _mm256_add_epi32(r1, r2);
+				_mm256_store_si256(reinterpret_cast<__m256i*> (reinterpret_cast<int*> (this) + 8), r1);
+			}
 		}
+
+		return *this;
 	}
 
 
 	template <turbolin::MatrixType T, std::size_t D>
 	template <turbolin::MatrixType T2>
 	const turbolin::Matrix<T, D> &Matrix<T, D>::operator-=(const turbolin::Matrix<T2, D> &matrix) {
+		if constexpr (std::is_same_v<T, float>) {
+			__m256 r1 {_mm256_load_ps(reinterpret_cast<const float*> (this))};
+			__m256 r2 {};
+			turbolin::_loadAVXRegister(&r2, reinterpret_cast<const T2*> (&matrix));
+			r1 = _mm256_sub_ps(r1, r2);
+			_mm256_store_ps(reinterpret_cast<float*> (this), r1);
+			if constexpr (D >= 3) {
+				r1 = _mm256_load_ps(reinterpret_cast<const float*> (this) + 8);
+				turbolin::_loadAVXRegister(&r2, reinterpret_cast<const T2*> (&matrix) + 8);
+				r1 = _mm256_sub_ps(r1, r2);
+				_mm256_store_ps(reinterpret_cast<float*> (this) + 8, r1);
+			}
+		}
+		else {
+			__m256i r1 {_mm256_load_si256(reinterpret_cast<const __m256i*> (this))};
+			__m256i r2 {};
+			turbolin::_loadAVXRegister(&r2, reinterpret_cast<const T2*> (&matrix));
+			r1 = _mm256_sub_epi32(r1, r2);
+			_mm256_store_si256(reinterpret_cast<__m256i*> (this), r1);
+			if constexpr (D >= 3) {
+				r1 = _mm256_load_si256(reinterpret_cast<const __m256i*> (reinterpret_cast<const int*> (this) + 8));
+				turbolin::_loadAVXRegister(&r2, reinterpret_cast<const T2*> (&matrix) + 8);
+				r1 = _mm256_sub_epi32(r1, r2);
+				_mm256_store_si256(reinterpret_cast<__m256i*> (reinterpret_cast<int*> (this) + 8), r1);
+			}
+		}
 
+		return *this;
 	}
 
 
