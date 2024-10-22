@@ -12,6 +12,33 @@
 
 
 namespace turbolin {
+	namespace {
+		template <turbolin::MatrixType T2>
+		void _loadAVXRegister(__m256 *output, const T2 *ptr) {
+			if constexpr (std::is_same_v<T2, float>) {
+				*output = _mm256_load_ps(ptr);
+			}
+			else {
+				__m256i tmp {_mm256_load_si256(reinterpret_cast<const __m256i*> (ptr))};
+				*output = _mm256_cvtepi32_ps(tmp);
+			}
+		}
+
+		template <turbolin::MatrixType T2>
+		void _loadAVXRegister(__m256i *output, const T2 *ptr) {
+			if constexpr (std::is_same_v<T2, int>) {
+				*output = _mm256_load_si256(reinterpret_cast<const __m256i*> (ptr));
+			}
+			else {
+				__m256 tmp {_mm256_load_ps(ptr)};
+				*output = _mm256_cvtps_epi32(tmp);
+			}
+		}
+	} // namespace
+
+
+
+
 	template <turbolin::MatrixType T, std::size_t D>
 	template <turbolin::MatrixType ...Args>
 	Matrix<T, D>::Matrix(Args&& ...args) {
@@ -99,66 +126,64 @@ namespace turbolin {
 	template <turbolin::MatrixType T, std::size_t D>
 	template <turbolin::MatrixType T2>
 	bool Matrix<T, D>::operator==(const turbolin::Matrix<T2, D> &matrix) const noexcept {
-		if constexpr (std::is_same_v<T, T2>) {
-			if constexpr (std::is_same_v<T, float>) {
-				__m256 r1 {_mm256_load_ps(reinterpret_cast<const float*> (this))};
-				__m256 r2 {_mm256_load_ps(reinterpret_cast<const float*> (&matrix))};
+		if constexpr (std::is_same_v<T, float>) {
+			__m256 r1 {_mm256_load_ps(reinterpret_cast<const float*> (this))};
+			__m256 r2 {};
+			turbolin::_loadAVXRegister(&r2, reinterpret_cast<const T2*> (&matrix));
+			r1 = _mm256_cmp_ps(r1, r2, _CMP_EQ_OQ);
+			bool result {_mm256_movemask_ps(r1) == 0xff};
+			if constexpr (D >= 3) {
+				r1 = _mm256_load_ps(reinterpret_cast<const float*> (this) + 8);
+				turbolin::_loadAVXRegister(&r2, reinterpret_cast<const T2*> (&matrix) + 8);
 				r1 = _mm256_cmp_ps(r1, r2, _CMP_EQ_OQ);
-				bool result {_mm256_movemask_ps(r1) == 0xff};
-				if constexpr (D >= 3) {
-					r1 = _mm256_load_ps(reinterpret_cast<const float*> (this) + 8);
-					r2 = _mm256_load_ps(reinterpret_cast<const float*> (&matrix) + 8);
-					r1 = _mm256_cmp_ps(r1, r2, _CMP_EQ_OQ);
-					result = result && _mm256_movemask_ps(r1) == 0xff;
-				}
-				return result;
+				result = result && _mm256_movemask_ps(r1) == 0xff;
 			}
-			else {
-				__m256i r1 {_mm256_load_si256(reinterpret_cast<const __m256i*> (this))};
-				__m256i r2 {_mm256_load_si256(reinterpret_cast<const __m256i*> (&matrix))};
-				r1 = _mm256_cmpeq_epi32(r1, r2);
-				bool result {_mm256_movemask_epi8(r1) == 0xffffffff};
-				if constexpr (D >= 3) {
-					r1 = _mm256_load_si256(reinterpret_cast<const __m256i*> (reinterpret_cast<const int*> (this) + 8));
-					r2 = _mm256_load_si256(reinterpret_cast<const __m256i*> (reinterpret_cast<const int*> (&matrix) + 8));
-					r1 = _mm256_cmpeq_epi32(r1, r2);
-					result = result && _mm256_movemask_epi8(r1) == 0xffffffff;
-				}
-				return result;
-			}
+			return result;
 		}
 		else {
-			if constexpr (std::is_same_v<T, float>) {
-				__m256 r1 {_mm256_load_ps(reinterpret_cast<const float*> (this))};
-				__m256i r3 {_mm256_load_si256(reinterpret_cast<const __m256i*> (&matrix))};
-				__m256 r2 {_mm256_cvtepi32_ps(r3)};
-				r1 = _mm256_cmp_ps(r1, r2, _CMP_EQ_OQ);
-				bool result {_mm256_movemask_ps(r1) == 0xff};
-				if constexpr (D >= 3) {
-					r1 = _mm256_load_ps(reinterpret_cast<const float*> (this) + 8);
-					r3 = _mm256_load_si256(reinterpret_cast<const __m256i*> (reinterpret_cast<const int*> (&matrix) + 8));
-					r2 = _mm256_cvtepi32_ps(r3);
-					r1 = _mm256_cmp_ps(r1, r2, _CMP_EQ_OQ);
-					result = result && _mm256_movemask_ps(r1) == 0xff;
-				}
-				return result;
-			}
-			else {
-				__m256i r1 {_mm256_load_si256(reinterpret_cast<const __m256i*> (this))};
-				__m256 r3 {_mm256_load_ps(reinterpret_cast<const float*> (&matrix))};
-				__m256i r2 {_mm256_cvtps_epi32(r3)};
+			__m256i r1 {_mm256_load_si256(reinterpret_cast<const __m256i*> (this))};
+			__m256i r2 {};
+			turbolin::_loadAVXRegister(&r2, reinterpret_cast<const T2*> (&matrix));
+			r1 = _mm256_cmpeq_epi32(r1, r2);
+			bool result {_mm256_movemask_epi8(r1) == 0xffffffff};
+			if constexpr (D >= 3) {
+				r1 = _mm256_load_si256(reinterpret_cast<const __m256i*> (reinterpret_cast<const int*> (this) + 8));
+				turbolin::_loadAVXRegister(&r2, reinterpret_cast<const T2*> (&matrix) + 8);
 				r1 = _mm256_cmpeq_epi32(r1, r2);
-				bool result {_mm256_movemask_epi8(r1) == 0xffffffff};
-				if constexpr (D >= 3) {
-					r1 = _mm256_load_si256(reinterpret_cast<const __m256i*> (reinterpret_cast<const int*> (this) + 8));
-					r3 = _mm256_load_ps(reinterpret_cast<const float*> (&matrix) + 8);
-					r2 = _mm256_cvtps_epi32(r3);
-					r1 = _mm256_cmpeq_epi32(r1, r2);
-					result = result && _mm256_movemask_epi8(r1) == 0xffffffff;
-				}
-				return result;
+				result = result && _mm256_movemask_epi8(r1) == 0xffffffff;
 			}
+			return result;
 		}
+	}
+
+
+	template <turbolin::MatrixType T, std::size_t D>
+	template <turbolin::MatrixType T2>
+	const turbolin::Matrix<T, D> &Matrix<T, D>::operator+=(const turbolin::Matrix<T2, D> &matrix) {
+		if constexpr (std::is_same_v<T, float>) {
+			__m256 r1 {_mm256_load_ps(reinterpret_cast<const float*> (this))};
+			__m256 r2 {};
+			turbolin::_loadAVXRegister(&r2, reinterpret_cast<const T2*> (&matrix));
+
+		}
+		else {
+
+		}
+	}
+
+
+	template <turbolin::MatrixType T, std::size_t D>
+	template <turbolin::MatrixType T2>
+	const turbolin::Matrix<T, D> &Matrix<T, D>::operator-=(const turbolin::Matrix<T2, D> &matrix) {
+
+	}
+
+
+
+	template <turbolin::MatrixType T, std::size_t D>
+	template <turbolin::MatrixType T2>
+	const turbolin::Matrix<T, D> &Matrix<T, D>::operator*=(const turbolin::Matrix<T2, D> &matrix) {
+
 	}
 
 

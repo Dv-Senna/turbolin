@@ -62,6 +62,13 @@ namespace turbolin {
 
 			template <turbolin::MatrixType T2>
 			bool operator==(const turbolin::Matrix<T2, D> &matrix) const noexcept;
+
+			template <turbolin::MatrixType T2>
+			const turbolin::Matrix<T, D> &operator+=(const turbolin::Matrix<T2, D> &matrix);
+			template <turbolin::MatrixType T2>
+			const turbolin::Matrix<T, D> &operator-=(const turbolin::Matrix<T2, D> &matrix);
+			template <turbolin::MatrixType T2>
+			const turbolin::Matrix<T, D> &operator*=(const turbolin::Matrix<T2, D> &matrix);
 	};
 
 } // namespace turbolin
