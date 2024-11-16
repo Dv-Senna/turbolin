@@ -11,85 +11,82 @@
 
 
 namespace turbolin {
-	namespace {
-		template <typename T>
-		concept VectorType = std::is_same_v<float, T> || std::is_same_v<std::int32_t, T>;
+	template <typename T>
+	concept VectorType = std::is_same_v<float, T> || std::is_same_v<std::int32_t, T>;
 
-		template <typename T>
-		struct VectorAlignement {
-			static constexpr std::size_t alignment {16};
+	template <typename T>
+	struct VectorAlignement {
+		static constexpr std::size_t alignment {16};
+	};
+
+
+	template <turbolin::VectorType T, std::size_t D>
+	struct VectorLayout;
+
+	template <turbolin::VectorType T>
+	struct VectorLayout<T, 2> {
+		union {
+			T x;
+			T u;
+			T w;
 		};
 
-
-		template <turbolin::VectorType T, std::size_t D>
-		struct VectorLayout;
-
-		template <turbolin::VectorType T>
-		struct VectorLayout<T, 2> {
-			union {
-				T x;
-				T u;
-				T w;
-			};
-
-			union {
-				T y;
-				T v;
-				T h;
-			};
-
-			private:
-				T __padding[2];
+		union {
+			T y;
+			T v;
+			T h;
 		};
 
-		template <turbolin::VectorType T>
-		struct VectorLayout<T, 3> {
-			union {
-				T x;
-				T r;
-				T w;
-			};
+		private:
+			T __padding[2];
+	};
 
-			union {
-				T y;
-				T g;
-				T h;
-			};
-
-			union {
-				T z;
-				T b;
-				T d;
-			};
-
-			private:
-				T __padding[1];
+	template <turbolin::VectorType T>
+	struct VectorLayout<T, 3> {
+		union {
+			T x;
+			T r;
+			T w;
 		};
 
-		template <turbolin::VectorType T>
-		struct VectorLayout<T, 4> {
-			union {
-				T x;
-				T r;
-			};
-
-			union {
-				T y;
-				T g;
-			};
-
-			union {
-				T z;
-				T b;
-			};
-
-			union {
-				T w;
-				T a;
-			};
+		union {
+			T y;
+			T g;
+			T h;
 		};
 
-	} // namespace
+		union {
+			T z;
+			T b;
+			T d;
+		};
+
+		private:
+			T __padding[1];
+	};
+
+	template <turbolin::VectorType T>
+	struct VectorLayout<T, 4> {
+		union {
+			T x;
+			T r;
+		};
+
+		union {
+			T y;
+			T g;
+		};
+
+		union {
+			T z;
+			T b;
+		};
+
+		union {
+			T w;
+			T a;
+		};
+	};
 
 
 	template <turbolin::VectorType T, std::size_t D>
