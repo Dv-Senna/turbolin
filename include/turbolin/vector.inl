@@ -248,6 +248,27 @@ namespace turbolin {
 	}
 
 
+	template <turbolin::VectorType T2>
+	const turbolin::Vector<T, D> &Vector<T, D>::operator*=(T2 scalar) noexcept {
+		if constexpr (std::is_same_v<T, float>) {
+			__m128 r1 {_mm_load_ps(reinterpret_cast<const float*> (this))};
+			__m128 r2 {_mm_set1_ps(static_cast<float> (scalar))};
+
+			r1 = _mm_mul_ps(r1, r2);
+			_mm_store_ps(reinterpret_cast<float*> (this), r1);
+		}
+		else {
+			__m128i r1 {_mm_load_si128(reinterpret_cast<const __m128i*> (this))};
+			__m128i r2 {_mm_set1_epi32(static_cast<std::int32_t> (scalar))};
+
+			r1 = _mm_mullo_epi32(r1, r2);
+			_mm_store_si128(reinterpret_cast<__m128i*> (this), r1);
+		}
+
+		return *this;
+	}
+
+
 	template <turbolin::VectorType T, turbolin::VectorType T2, std::size_t D>
 	T dot(const turbolin::Vector<T, D> &lhs, const turbolin::Vector<T2, D> &rhs) {
 		if constexpr (std::is_same_v<T, float>) {

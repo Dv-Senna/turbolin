@@ -109,6 +109,8 @@ namespace turbolin {
 			const turbolin::Vector<T, D> &operator-=(const turbolin::Vector<T2, D> &vector) noexcept;
 			template <turbolin::VectorType T2>
 			const turbolin::Vector<T, D> &operator*=(const turbolin::Vector<T2, D> &vector) noexcept;
+			template <turbolin::VectorType T2>
+			const turbolin::Vector<T, D> &operator*=(T2 scalar) noexcept;
 
 			template <turbolin::VectorType T2>
 			inline turbolin::Vector<T, D> operator+(const turbolin::Vector<T2, D> &vector) const noexcept {auto copy {*this}; return copy += vector;}
@@ -116,6 +118,8 @@ namespace turbolin {
 			inline turbolin::Vector<T, D> operator-(const turbolin::Vector<T2, D> &vector) const noexcept {auto copy {*this}; return copy -= vector;}
 			template <turbolin::VectorType T2>
 			inline turbolin::Vector<T, D> operator*(const turbolin::Vector<T2, D> &vector) const noexcept {auto copy {*this}; return copy *= vector;}
+			template <turbolin::VectorType T2>
+			inline turbolin::Vector<T, D> operator*(T2 scalar) const noexcept {auto copy {*this}; return copy *= scalar;}
 	};
 
 
@@ -124,6 +128,9 @@ namespace turbolin {
 
 	template <turbolin::VectorType T, turbolin::VectorType T2>
 	turbolin::Vector<T, 3> cross(const turbolin::Vector<T, 3> &lhs, const turbolin::Vector<T2, 3> &rhs);
+
+	template <turbolin::VectorType T, turbolin::VectorType T2, std::size_t D>
+	inline turbolin::Vector<T, D> operator*(T2 scalar, turbolin::Vector<T, D> vector) noexcept {return vector *= scalar;}
 
 	template <turbolin::VectorType T, std::size_t D>
 	std::ostream &operator<<(std::ostream &stream, const turbolin::Vector<T, D> &vector);
