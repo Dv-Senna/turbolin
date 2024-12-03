@@ -94,7 +94,7 @@ namespace turbolin {
 	class alignas(turbolin::VectorAlignement<T>::alignment) Vector : public turbolin::VectorLayout<T, D> {
 		public:
 			template <turbolin::VectorType ...Args>
-			Vector(Args&& ...args) noexcept;
+			Vector(Args ...args) noexcept;
 
 			template <turbolin::VectorType T2, std::size_t D2, turbolin::VectorType ...Args>
 			Vector(const turbolin::Vector<T2, D2> &vector, Args&& ...args) noexcept;

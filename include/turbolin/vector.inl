@@ -13,7 +13,7 @@
 namespace turbolin {
 	template <turbolin::VectorType T, std::size_t D>
 	template <turbolin::VectorType ...Args>
-	Vector<T, D>::Vector(Args&& ...args) noexcept {
+	Vector<T, D>::Vector(Args ...args) noexcept {
 		static_assert(sizeof...(Args) <= D, "Can't initialize a D-vector with more than D values");
 
 		if constexpr (sizeof...(Args) == 0) {
