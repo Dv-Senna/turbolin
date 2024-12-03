@@ -248,6 +248,7 @@ namespace turbolin {
 	}
 
 
+	template <turbolin::VectorType T, std::size_t D>
 	template <turbolin::VectorType T2>
 	const turbolin::Vector<T, D> &Vector<T, D>::operator*=(T2 scalar) noexcept {
 		if constexpr (std::is_same_v<T, float>) {
