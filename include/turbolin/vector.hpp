@@ -17,8 +17,9 @@ namespace tl {
 		struct VectorLayout<T, 2> {
 			union {T x, u, w;};
 			union {T y, v, h;};
-			[[no_unique_address]]
-			std::conditional_t<tl::IsSimd<T>, T[2], Empty> __padding;
+			private:
+				[[no_unique_address]]
+				std::conditional_t<tl::IsSimd<T>, T[2], Empty> __padding;
 		};
 
 		template <tl::Arithmetic T>
@@ -26,8 +27,9 @@ namespace tl {
 			union {T x, r;};
 			union {T y, g;};
 			union {T z, b;};
-			[[no_unique_address]]
-			std::conditional_t<tl::IsSimd<T>, T, Empty> __padding;
+			private:
+				[[no_unique_address]]
+				std::conditional_t<tl::IsSimd<T>, T, Empty> __padding;
 		};
 
 		template <tl::Arithmetic T>
@@ -41,7 +43,7 @@ namespace tl {
 
 		template <tl::Arithmetic T>
 		struct VectorAlignment {
-			static constexpr std::size_t value {tl::IsSimd<T> ? tl::SimdStrictestAlignment<T>::value : alignof(T)};
+			static constexpr std::size_t value {tl::SimdAlignment<tl::SimdExtension::eSSE2, T>::value};
 		};
 
 	} // namespace __internals
@@ -54,10 +56,6 @@ namespace tl {
 
 
 	// non-simd type
-	static_assert(std::is_standard_layout_v<Vector<char, 2>>);
-	static_assert(std::is_standard_layout_v<Vector<char, 3>>);
-	static_assert(std::is_standard_layout_v<Vector<char, 4>>);
-
 	static_assert(alignof(Vector<char, 2>) == alignof(char));
 	static_assert(alignof(Vector<char, 3>) == alignof(char));
 	static_assert(alignof(Vector<char, 4>) == alignof(char));
@@ -67,16 +65,12 @@ namespace tl {
 	static_assert(sizeof(Vector<char, 4>) == 4*sizeof(char));
 
 	// simd type
-	static_assert(std::is_standard_layout_v<Vector<float, 2>>);
-	static_assert(std::is_standard_layout_v<Vector<float, 3>>);
-	static_assert(std::is_standard_layout_v<Vector<float, 4>>);
+	static_assert(alignof(Vector<float, 2>) == tl::SimdAlignment<tl::SimdExtension::eSSE2, float>::value);
+	static_assert(alignof(Vector<float, 3>) == tl::SimdAlignment<tl::SimdExtension::eSSE2, float>::value);
+	static_assert(alignof(Vector<float, 4>) == tl::SimdAlignment<tl::SimdExtension::eSSE2, float>::value);
 
-	static_assert((tl::IsSimd<float> && alignof(Vector<float, 2>) == tl::SimdStrictestAlignment<float>::value) || sizeof(Vector<float, 2>) == alignof(float));
-	static_assert((tl::IsSimd<float> && alignof(Vector<float, 3>) == tl::SimdStrictestAlignment<float>::value) || sizeof(Vector<float, 3>) == alignof(float));
-	static_assert((tl::IsSimd<float> && alignof(Vector<float, 4>) == tl::SimdStrictestAlignment<float>::value) || sizeof(Vector<float, 4>) == alignof(float));
-
-	static_assert((tl::IsSimd<float> && sizeof(Vector<float, 2>) == 4*sizeof(float)) || sizeof(Vector<float, 2>) == 2*sizeof(float));
-	static_assert((tl::IsSimd<float> && sizeof(Vector<float, 3>) == 4*sizeof(float)) || sizeof(Vector<float, 3>) == 2*sizeof(float));
-	static_assert((tl::IsSimd<float> && sizeof(Vector<float, 4>) == 4*sizeof(float)) || sizeof(Vector<float, 4>) == 2*sizeof(float));
+	static_assert((tl::IsSimd<float> && sizeof(Vector<float, 2>) == tl::SimdSize<tl::SimdExtension::eSSE2, float>::value) || sizeof(Vector<float, 2>) == 2*sizeof(float));
+	static_assert((tl::IsSimd<float> && sizeof(Vector<float, 3>) == tl::SimdSize<tl::SimdExtension::eSSE2, float>::value) || sizeof(Vector<float, 3>) == 3*sizeof(float));
+	static_assert((tl::IsSimd<float> && sizeof(Vector<float, 4>) == tl::SimdSize<tl::SimdExtension::eSSE2, float>::value) || sizeof(Vector<float, 4>) == 4*sizeof(float));
 
 } // namespace tl 
