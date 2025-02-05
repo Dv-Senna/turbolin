@@ -121,6 +121,18 @@ namespace tl {
 
 
 	template <tl::Arithmetic T, std::size_t D>
+	template <tl::Arithmetic T2>
+	constexpr auto Vector<T, D>::operator*=(T2 scalar) noexcept -> Vector<T, D>& {
+		tl::simdRuntimeDispatcher<
+			void(*)(Vector<T, D>&, T2),
+			tl::default_::vector::scalarMul<T, D, T2>,
+			tl::sse2::vector::scalarMul<T, D, T2>
+		> (*this, vector);
+		return *this;
+	}
+
+
+	template <tl::Arithmetic T, std::size_t D>
 	auto operator<<(std::ostream &stream, const Vector<T, D> &vector) noexcept -> std::ostream& {
 		if constexpr (D == 2)
 			stream << "(" << vector.x << ", " << vector.y << ")";

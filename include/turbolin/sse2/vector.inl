@@ -142,4 +142,25 @@ namespace tl::sse2::vector {
 		}
 	}
 
+
+	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2>
+	constexpr auto scalarMul(tl::Vector<T, D> &self, T2 scalar) noexcept -> void {
+		if constexpr (!tl::IsSSE2<T> || !tl::IsSSE2<T2>)
+			return tl::default_::vector::scalarMul(self, scalar);
+		else {
+			if constexpr (std::is_same_v<T, float>) {
+				__m128 r1 {loadReg<float> (self)};
+				__m128 r2 {_mm_set1_ps(static_cast<float> (scalar))};
+				r1 = _mm_mul_ps(r1, r2);
+				storeReg(self, r1);
+			}
+			else if constexpr (std::is_same_v<T, std::int32_t>) {
+				__m128i r1 {loadReg<std::int32_t> (self)};
+				__m128i r2 {_mm_set1_epi32(static_cast<std::int32_t> (scalar))};
+				r1 = _mm_mul_epi32(r1, r2);
+				storeReg(self, r1);
+			}
+		}
+	}
+
 } // namespace tl::sse2::vector

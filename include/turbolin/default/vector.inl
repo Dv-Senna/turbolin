@@ -94,4 +94,15 @@ namespace tl::default_::vector {
 			self.w *= vector.w;
 	}
 
+
+	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2>
+	constexpr auto scalarMul(tl::Vector<T, D> &self, T2 scalar) noexcept -> void {
+		self.x *= scalar;
+		self.y *= scalar;
+		if constexpr (D >= 3)
+			self.z *= scalar;
+		if constexpr (D >= 4)
+			self.w *= scalar;
+	}
+
 } // namespace tl::default_::vector

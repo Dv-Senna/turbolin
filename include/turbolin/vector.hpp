@@ -74,13 +74,24 @@ namespace tl {
 			constexpr auto operator-=(const Vector<T2, D> &vector) noexcept -> Vector<T, D>&;
 			template <tl::Arithmetic T2>
 			constexpr auto operator*=(const Vector<T2, D> &vector) noexcept -> Vector<T, D>&;
+			template <tl::Arithmetic T2>
+			constexpr auto operator*=(T2 scalar) noexcept -> Vector<T, D>&;
+			template <tl::Arithmetic T2>
+			constexpr auto operator/=(T2 scalar) noexcept -> Vector<T, D>& {return *this *= static_cast<T2> (1) / scalar;}
 
 			template <tl::Arithmetic T2>
 			constexpr auto operator+(const Vector<T2, D> &vector) const noexcept {auto tmp {*this}; return tmp += vector;}
 			template <tl::Arithmetic T2>
-			constexpr auto operator-(const Vector<T2, D> &vector) const noexcept {auto tmp {*this}; return tmp += vector;}
+			constexpr auto operator-(const Vector<T2, D> &vector) const noexcept {auto tmp {*this}; return tmp -= vector;}
 			template <tl::Arithmetic T2>
-			constexpr auto operator*(const Vector<T2, D> &vector) const noexcept {auto tmp {*this}; return tmp += vector;}
+			constexpr auto operator*(const Vector<T2, D> &vector) const noexcept {auto tmp {*this}; return tmp *= vector;}
+			template <tl::Arithmetic T2>
+			constexpr auto operator*(T2 scalar) noexcept {auto tmp {*this}; return tmp *= scalar;};
+			template <tl::Arithmetic T2>
+			constexpr auto operator/(T2 scalar) noexcept {auto tmp {*this}; return tmp /= scalar;};
+
+			template <tl::Arithmetic T2>
+			friend constexpr auto operator*(T2 scalar, Vector<T, D> vector) noexcept {return vector *= scalar;}
 	};
 
 	template <tl::Arithmetic ...Args>
