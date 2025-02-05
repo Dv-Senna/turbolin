@@ -8,7 +8,7 @@
 #include "turbolin/assert.hpp"
 
 #include "turbolin/default/vector.inl"
-#include "turbolin/sse2/vector.inl"
+#include "turbolin/sse42/vector.inl"
 
 
 namespace tl {
@@ -19,7 +19,7 @@ namespace tl {
 		tl::simdRuntimeDispatcher<
 			void(*)(Vector<T, D>&, Args...),
 			tl::default_::vector::construct<T, D, Args...>,
-			tl::sse2::vector::construct<T, D, Args...>
+			tl::sse42::vector::construct<T, D, Args...>
 		> (*this, args...);
 	}
 
@@ -31,7 +31,7 @@ namespace tl {
 		tl::simdRuntimeDispatcher<
 			void(*)(Vector<T, D>&, const Vector<T2, D2>&, Args...),
 			tl::default_::vector::copy<T, D, T2, D2, Args...>,
-			tl::sse2::vector::copy<T, D, T2, D2, Args...>
+			tl::sse42::vector::copy<T, D, T2, D2, Args...>
 		> (*this, vector, args...);
 	}
 
@@ -90,7 +90,7 @@ namespace tl {
 		tl::simdRuntimeDispatcher<
 			void(*)(Vector<T, D>&, const Vector<T2, D>&),
 			tl::default_::vector::add<T, D, T2>,
-			tl::sse2::vector::add<T, D, T2>
+			tl::sse42::vector::add<T, D, T2>
 		> (*this, vector);
 		return *this;
 	}
@@ -102,7 +102,7 @@ namespace tl {
 		tl::simdRuntimeDispatcher<
 			void(*)(Vector<T, D>&, const Vector<T2, D>&),
 			tl::default_::vector::sub<T, D, T2>,
-			tl::sse2::vector::sub<T, D, T2>
+			tl::sse42::vector::sub<T, D, T2>
 		> (*this, vector);
 		return *this;
 	}
@@ -114,7 +114,7 @@ namespace tl {
 		tl::simdRuntimeDispatcher<
 			void(*)(Vector<T, D>&, const Vector<T2, D>&),
 			tl::default_::vector::mul<T, D, T2>,
-			tl::sse2::vector::mul<T, D, T2>
+			tl::sse42::vector::mul<T, D, T2>
 		> (*this, vector);
 		return *this;
 	}
@@ -126,8 +126,8 @@ namespace tl {
 		tl::simdRuntimeDispatcher<
 			void(*)(Vector<T, D>&, T2),
 			tl::default_::vector::scalarMul<T, D, T2>,
-			tl::sse2::vector::scalarMul<T, D, T2>
-		> (*this, vector);
+			tl::sse42::vector::scalarMul<T, D, T2>
+		> (*this, scalar);
 		return *this;
 	}
 

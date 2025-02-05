@@ -7,7 +7,7 @@
 #include "turbolin/default/vector.inl"
 
 
-namespace tl::sse2::vector {
+namespace tl::sse42::vector {
 	template <typename T>
 	struct Reg {
 		using Type = __m128i;
@@ -22,7 +22,7 @@ namespace tl::sse2::vector {
 	using Reg_t = typename Reg<T>::Type;
 
 
-	template <tl::IsSSE2 T, tl::IsSSE2 T2, std::size_t D>
+	template <tl::IsSSE42 T, tl::IsSSE42 T2, std::size_t D>
 	inline auto loadReg(const tl::Vector<T2, D> &vector) noexcept -> Reg_t<T> {
 		if constexpr (std::is_same_v<T, float>) {
 			if constexpr (std::is_same_v<T2, float>)
@@ -36,7 +36,7 @@ namespace tl::sse2::vector {
 		}
 	}
 
-	template <tl::IsSSE2 T, std::size_t D>
+	template <tl::IsSSE42 T, std::size_t D>
 	inline auto storeReg(tl::Vector<T, D> &vector, Reg_t<T> reg) noexcept -> void {
 		if constexpr (std::is_same_v<T, float>)
 			_mm_store_ps(reinterpret_cast<float*> (&vector), reg);
@@ -48,7 +48,7 @@ namespace tl::sse2::vector {
 
 	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic ...Args>
 	constexpr auto construct(tl::Vector<T, D> &self, Args ...args) noexcept -> void {
-		if constexpr (!tl::IsSSE2<T> || sizeof...(Args) != 0)
+		if constexpr (!tl::IsSSE42<T> || sizeof...(Args) != 0)
 			return tl::default_::vector::construct(self, args...);
 		else {
 			if constexpr (std::is_same_v<T, float>) {
@@ -65,7 +65,7 @@ namespace tl::sse2::vector {
 
 	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2, std::size_t D2, tl::Arithmetic ...Args>
 	constexpr auto copy(tl::Vector<T, D> &self, const tl::Vector<T2, D2> &vector, Args ...args) noexcept -> void {
-		if constexpr (!tl::IsSSE2<T> || !tl::IsSSE2<T2> || D != D2 || sizeof...(Args) != 0)
+		if constexpr (!tl::IsSSE42<T> || !tl::IsSSE42<T2> || D != D2 || sizeof...(Args) != 0)
 			return tl::default_::vector::copy(self, vector, args...);
 		else {
 			if constexpr (std::is_same_v<T, float>) {
@@ -82,7 +82,7 @@ namespace tl::sse2::vector {
 
 	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2>
 	constexpr auto add(tl::Vector<T, D> &self, const tl::Vector<T2, D> &vector) noexcept -> void {
-		if constexpr (!tl::IsSSE2<T> || !tl::IsSSE2<T2>)
+		if constexpr (!tl::IsSSE42<T> || !tl::IsSSE42<T2>)
 			return tl::default_::vector::add(self, vector);
 		else {
 			if constexpr (std::is_same_v<T, float>) {
@@ -103,7 +103,7 @@ namespace tl::sse2::vector {
 
 	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2>
 	constexpr auto sub(tl::Vector<T, D> &self, const tl::Vector<T2, D> &vector) noexcept -> void {
-		if constexpr (!tl::IsSSE2<T> || !tl::IsSSE2<T2>)
+		if constexpr (!tl::IsSSE42<T> || !tl::IsSSE42<T2>)
 			return tl::default_::vector::sub(self, vector);
 		else {
 			if constexpr (std::is_same_v<T, float>) {
@@ -124,7 +124,7 @@ namespace tl::sse2::vector {
 
 	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2>
 	constexpr auto mul(tl::Vector<T, D> &self, const tl::Vector<T2, D> &vector) noexcept -> void {
-		if constexpr (!tl::IsSSE2<T> || !tl::IsSSE2<T2>)
+		if constexpr (!tl::IsSSE42<T> || !tl::IsSSE42<T2>)
 			return tl::default_::vector::mul(self, vector);
 		else {
 			if constexpr (std::is_same_v<T, float>) {
@@ -145,7 +145,7 @@ namespace tl::sse2::vector {
 
 	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2>
 	constexpr auto scalarMul(tl::Vector<T, D> &self, T2 scalar) noexcept -> void {
-		if constexpr (!tl::IsSSE2<T> || !tl::IsSSE2<T2>)
+		if constexpr (!tl::IsSSE42<T> || !tl::IsSSE42<T2>)
 			return tl::default_::vector::scalarMul(self, scalar);
 		else {
 			if constexpr (std::is_same_v<T, float>) {
@@ -163,4 +163,4 @@ namespace tl::sse2::vector {
 		}
 	}
 
-} // namespace tl::sse2::vector
+} // namespace tl::sse42::vector

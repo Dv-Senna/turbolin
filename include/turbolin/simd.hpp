@@ -25,7 +25,7 @@ namespace tl {
 
 	enum class SimdExtension {
 		eNone = 0,
-		eSSE2 = 1,
+		eSSE42 = 1,
 		eAVX  = 2,
 		eAll  = 3
 	};
@@ -34,7 +34,7 @@ namespace tl {
 	concept IsSimd = std::same_as<T, float> || std::same_as<T, std::int32_t>;
 
 	template <typename T>
-	concept IsSSE2 = std::same_as<T, float> || std::same_as<T, std::int32_t>;
+	concept IsSSE42 = std::same_as<T, float> || std::same_as<T, std::int32_t>;
 
 	template <typename T>
 	concept IsAVX = std::same_as<T, float> || std::same_as<T, std::int32_t>;
@@ -48,7 +48,7 @@ namespace tl {
 
 		firstTime = false;
 		supported[static_cast<std::size_t> (SimdExtension::eNone)] = true;
-		supported[static_cast<std::size_t> (SimdExtension::eSSE2)] = !!__builtin_cpu_supports("sse2");
+		supported[static_cast<std::size_t> (SimdExtension::eSSE42)] = !!__builtin_cpu_supports("sse4.2");
 		supported[static_cast<std::size_t> (SimdExtension::eAVX)] = !!__builtin_cpu_supports("avx");
 		return isSimdExtensionSupported(extension);
 	}
@@ -89,13 +89,13 @@ namespace tl {
 	};
 
 
-	template <IsSSE2 T>
-	struct SimdAlignment<SimdExtension::eSSE2, T> {
+	template <IsSSE42 T>
+	struct SimdAlignment<SimdExtension::eSSE42, T> {
 		static constexpr std::size_t value {16};
 	};
 
-	template <IsSSE2 T>
-	struct SimdSize<SimdExtension::eSSE2, T> {
+	template <IsSSE42 T>
+	struct SimdSize<SimdExtension::eSSE42, T> {
 		static constexpr std::size_t value {4 * sizeof(T)};
 	};
 
@@ -114,7 +114,7 @@ namespace tl {
 	template <Arithmetic T>
 	struct SimdStrictestAlignment {
 		static constexpr std::size_t value {tl::max(
-			SimdAlignment<SimdExtension::eSSE2, T>::value,
+			SimdAlignment<SimdExtension::eSSE42, T>::value,
 			SimdAlignment<SimdExtension::eAVX, T>::value
 		)};
 	};
@@ -122,7 +122,7 @@ namespace tl {
 	template <Arithmetic T>
 	struct SimdStrictestSize {
 		static constexpr std::size_t value {tl::max(
-			SimdSize<SimdExtension::eSSE2, T>::value,
+			SimdSize<SimdExtension::eSSE42, T>::value,
 			SimdSize<SimdExtension::eAVX, T>::value
 		)};
 	};
