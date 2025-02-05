@@ -1,7 +1,10 @@
 #pragma once
 
 #include <cstddef>
+#include <format>
 #include <ostream>
+#include <sstream>
+#include <string>
 #include <type_traits>
 
 #include "turbolin/simd.hpp"
@@ -96,5 +99,16 @@ namespace tl {
 	static_assert((tl::IsSimd<float> && sizeof(Vector<float, 4>) == tl::SimdSize<tl::SimdExtension::eSSE2, float>::value) || sizeof(Vector<float, 4>) == 4*sizeof(float));
 
 } // namespace tl 
+
+
+template <tl::Arithmetic T, std::size_t D>
+struct std::formatter<tl::Vector<T, D>> : std::formatter<std::string> {
+	template <typename FormatContext>
+	inline auto format(const tl::Vector<T, D> &vector, FormatContext &ctx) const noexcept -> typename FormatContext::iterator {
+		std::ostringstream stream {};
+		stream << vector;
+		return std::formatter<std::string>::format(stream.str(), ctx);
+	}
+};
 
 #include "turbolin/vector.inl"
