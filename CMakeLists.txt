@@ -19,9 +19,10 @@ add_compile_definitions("${PROJECT_ACRONYM_UPPERCASE}_$<IF:$<CONFIG:Debug>,DEBUG
 
 include_directories(include vendors/TestItNow/include)
 
-file(GLOB_RECURSE TURBOLIN_HEADER include/*.hpp include/*.inl)
+file(GLOB_RECURSE TURBOLIN_HEADER include/*.hpp)
+file(GLOB_RECURSE TURBOLIN_INLINE include/*.inl)
 file(GLOB_RECURSE TEST_SOURCES tests/*.cpp)
 
-add_compile_options(-march=native)
+add_compile_options(-march=native -Wall -Wextra -pedantic)
 
-add_executable(${PROJECT_NAME} ${TURBOLIN_HEADER} ${TEST_SOURCES})
+add_executable(${PROJECT_NAME} ${TURBOLIN_HEADER} ${TURBOLIN_INLINE} ${TEST_SOURCES})

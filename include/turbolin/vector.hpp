@@ -1,166 +1,145 @@
 #pragma once
 
-#include <cinttypes>
+#include <cstddef>
+#include <format>
 #include <ostream>
+#include <sstream>
+#include <string>
 #include <type_traits>
-#include <version>
 
-#ifdef __cpp_lib_format
-	#include <format>
-#endif
+#include "turbolin/simd.hpp"
 
 
+namespace tl {
+	namespace __internals {
+		struct Empty {};
 
-namespace turbolin {
-	template <typename T>
-	concept VectorType = std::is_same_v<float, T> || std::is_same_v<std::int32_t, T>;
+		template <tl::Arithmetic T, std::size_t D>
+		requires (D > 1 && D <= 4)
+		struct VectorLayout;
 
-	template <typename T>
-	struct VectorAlignement {
-		static constexpr std::size_t alignment {16};
-	};
-
-
-	template <turbolin::VectorType T, std::size_t D>
-	struct VectorLayout;
-
-	template <turbolin::VectorType T>
-	struct VectorLayout<T, 2> {
-		union {
-			T x;
-			T u;
-			T w;
+		template <tl::Arithmetic T>
+		struct VectorLayout<T, 2> {
+			union {T x, u, w;};
+			union {T y, v, h;};
+			[[no_unique_address]]
+			std::conditional_t<tl::IsSimd<T>, T[2], Empty> __padding;
 		};
 
-		union {
-			T y;
-			T v;
-			T h;
+		template <tl::Arithmetic T>
+		struct VectorLayout<T, 3> {
+			union {T x, r;};
+			union {T y, g;};
+			union {T z, b;};
+			[[no_unique_address]]
+			std::conditional_t<tl::IsSimd<T>, T[1], Empty> __padding;
 		};
 
-		private:
-			T __padding[2];
-	};
-
-	template <turbolin::VectorType T>
-	struct VectorLayout<T, 3> {
-		union {
-			T x;
-			T r;
-			T w;
+		template <tl::Arithmetic T>
+		struct VectorLayout<T, 4> {
+			union {T x, r;};
+			union {T y, g;};
+			union {T z, b;};
+			union {T w, a;};
 		};
 
-		union {
-			T y;
-			T g;
-			T h;
+
+		template <tl::Arithmetic T>
+		struct VectorAlignment {
+			static constexpr std::size_t value {tl::SimdAlignment<tl::SimdExtension::eSSE42, T>::value};
 		};
 
-		union {
-			T z;
-			T b;
-			T d;
-		};
-
-		private:
-			T __padding[1];
-	};
-
-	template <turbolin::VectorType T>
-	struct VectorLayout<T, 4> {
-		union {
-			T x;
-			T r;
-		};
-
-		union {
-			T y;
-			T g;
-		};
-
-		union {
-			T z;
-			T b;
-		};
-
-		union {
-			T w;
-			T a;
-		};
-	};
+	} // namespace __internals
 
 
-	template <turbolin::VectorType T, std::size_t D>
-	class alignas(turbolin::VectorAlignement<T>::alignment) Vector : public turbolin::VectorLayout<T, D> {
+	template <tl::Arithmetic T, std::size_t D>
+	class alignas(__internals::VectorAlignment<T>::value) Vector : public __internals::VectorLayout<T, D> {
 		public:
-			template <turbolin::VectorType ...Args>
-			Vector(Args ...args) noexcept;
+			template <tl::Arithmetic ...Args>
+			requires (sizeof...(Args) <= D)
+			constexpr Vector(Args ...args) noexcept;
 
-			template <turbolin::VectorType T2, std::size_t D2, turbolin::VectorType ...Args>
-			Vector(const turbolin::Vector<T2, D2> &vector, Args&& ...args) noexcept;
-			template <turbolin::VectorType T2>
-			const turbolin::Vector<T, D> &operator=(const turbolin::Vector<T2, D> &vector) noexcept;
+			template <tl::Arithmetic T2, std::size_t D2, tl::Arithmetic ...Args>
+			requires (sizeof...(Args) <= D - D2)
+			constexpr Vector(const Vector<T2, D2> &vector, Args ...args) noexcept;
+			template <tl::Arithmetic T2>
+			constexpr auto operator=(const Vector<T2, D> &vector) noexcept -> Vector<T, D>&;
 
-			template <turbolin::VectorType T2>
-			bool operator==(const turbolin::Vector<T2, D> &vector) const noexcept;
+			template <tl::Arithmetic T2>
+			constexpr auto operator==(const Vector<T2, D> &vector) const noexcept -> bool;
 
-			template <turbolin::VectorType T2>
-			const turbolin::Vector<T, D> &operator+=(const turbolin::Vector<T2, D> &vector) noexcept;
-			template <turbolin::VectorType T2>
-			const turbolin::Vector<T, D> &operator-=(const turbolin::Vector<T2, D> &vector) noexcept;
-			template <turbolin::VectorType T2>
-			const turbolin::Vector<T, D> &operator*=(const turbolin::Vector<T2, D> &vector) noexcept;
-			template <turbolin::VectorType T2>
-			const turbolin::Vector<T, D> &operator*=(T2 scalar) noexcept;
+			constexpr auto get(std::size_t index) noexcept -> T&;
+			constexpr auto get(std::size_t index) const noexcept -> const T&;
 
-			template <turbolin::VectorType T2>
-			inline turbolin::Vector<T, D> operator+(const turbolin::Vector<T2, D> &vector) const noexcept {auto copy {*this}; return copy += vector;}
-			template <turbolin::VectorType T2>
-			inline turbolin::Vector<T, D> operator-(const turbolin::Vector<T2, D> &vector) const noexcept {auto copy {*this}; return copy -= vector;}
-			template <turbolin::VectorType T2>
-			inline turbolin::Vector<T, D> operator*(const turbolin::Vector<T2, D> &vector) const noexcept {auto copy {*this}; return copy *= vector;}
-			template <turbolin::VectorType T2>
-			inline turbolin::Vector<T, D> operator*(T2 scalar) const noexcept {auto copy {*this}; return copy *= scalar;}
+			template <tl::Arithmetic T2>
+			constexpr auto operator+=(const Vector<T2, D> &vector) noexcept -> Vector<T, D>&;
+			template <tl::Arithmetic T2>
+			constexpr auto operator-=(const Vector<T2, D> &vector) noexcept -> Vector<T, D>&;
+			template <tl::Arithmetic T2>
+			constexpr auto operator*=(const Vector<T2, D> &vector) noexcept -> Vector<T, D>&;
+			template <tl::Arithmetic T2>
+			constexpr auto operator*=(T2 scalar) noexcept -> Vector<T, D>&;
+			template <tl::Arithmetic T2>
+			constexpr auto operator/=(T2 scalar) noexcept -> Vector<T, D>& {return *this *= static_cast<T2> (1) / scalar;}
+
+			template <tl::Arithmetic T2>
+			constexpr auto operator+(const Vector<T2, D> &vector) const noexcept {auto tmp {*this}; return tmp += vector;}
+			template <tl::Arithmetic T2>
+			constexpr auto operator-(const Vector<T2, D> &vector) const noexcept {auto tmp {*this}; return tmp -= vector;}
+			template <tl::Arithmetic T2>
+			constexpr auto operator*(const Vector<T2, D> &vector) const noexcept {auto tmp {*this}; return tmp *= vector;}
+			template <tl::Arithmetic T2>
+			constexpr auto operator*(T2 scalar) noexcept {auto tmp {*this}; return tmp *= scalar;};
+			template <tl::Arithmetic T2>
+			constexpr auto operator/(T2 scalar) noexcept {auto tmp {*this}; return tmp /= scalar;};
+
+			template <tl::Arithmetic T2>
+			friend constexpr auto operator*(T2 scalar, Vector<T, D> vector) noexcept {return vector *= scalar;}
 	};
 
-
-	template <turbolin::VectorType T, turbolin::VectorType T2, std::size_t D>
-	T dot(const turbolin::Vector<T, D> &lhs, const turbolin::Vector<T2, D> &rhs);
-
-	template <turbolin::VectorType T, turbolin::VectorType T2>
-	turbolin::Vector<T, 3> cross(const turbolin::Vector<T, 3> &lhs, const turbolin::Vector<T2, 3> &rhs);
-
-	template <turbolin::VectorType T, turbolin::VectorType T2, std::size_t D>
-	inline turbolin::Vector<T, D> operator*(T2 scalar, turbolin::Vector<T, D> vector) noexcept {return vector *= scalar;}
-
-	template <turbolin::VectorType T, std::size_t D>
-	std::ostream &operator<<(std::ostream &stream, const turbolin::Vector<T, D> &vector);
-
-} // namespace turbolin
+	template <tl::Arithmetic ...Args>
+	Vector(Args ...args) noexcept -> Vector<std::tuple_element_t<0, std::tuple<Args...>>, sizeof...(Args)>;
 
 
-#ifdef __cpp_lib_format
-	template <turbolin::VectorType T, std::size_t D>
-	struct std::formatter<turbolin::Vector<T, D>> {
-		constexpr auto parse(std::format_parse_context &ctx) {
-			if (*ctx.begin() != '}')
-				throw std::format_error("turbolin::Vector does not accept any format args");
-			return ctx.begin();
-		}
+	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2>
+	constexpr auto dot(const Vector<T, D> &lhs, const Vector<T2, D> &rhs) noexcept -> T;
 
-		auto format(const turbolin::Vector<T, D> &vector, std::format_context &ctx) const {
-			if constexpr (D == 2) {
-				return std::format_to(ctx.out(), "({}, {})", vector.x, vector.y);
-			}
-			else if constexpr (D == 3) {
-				return std::format_to(ctx.out(), "({}, {}, {})", vector.x, vector.y, vector.z);
-			}
-			else {
-				return std::format_to(ctx.out(), "({}, {}, {}, {})", vector.x, vector.y, vector.z, vector.w);
-			}
-		}
-	};
-#endif
+	template <tl::Arithmetic T, tl::Arithmetic T2>
+	constexpr auto cross(const Vector<T, 3> &lhs, const Vector<T2, 3> &rhs) noexcept -> Vector<T, 3>;
 
+
+	template <tl::Arithmetic T, std::size_t D>
+	auto operator<<(std::ostream &stream, const Vector<T, D> &vector) noexcept -> std::ostream&;
+
+	// non-simd type
+	static_assert(alignof(Vector<char, 2>) == alignof(char));
+	static_assert(alignof(Vector<char, 3>) == alignof(char));
+	static_assert(alignof(Vector<char, 4>) == alignof(char));
+
+	static_assert(sizeof(Vector<char, 2>) == 2*sizeof(char));
+	static_assert(sizeof(Vector<char, 3>) == 3*sizeof(char));
+	static_assert(sizeof(Vector<char, 4>) == 4*sizeof(char));
+
+	// simd type
+	static_assert(alignof(Vector<float, 2>) == tl::SimdAlignment<tl::SimdExtension::eSSE42, float>::value);
+	static_assert(alignof(Vector<float, 3>) == tl::SimdAlignment<tl::SimdExtension::eSSE42, float>::value);
+	static_assert(alignof(Vector<float, 4>) == tl::SimdAlignment<tl::SimdExtension::eSSE42, float>::value);
+
+	static_assert((tl::IsSimd<float> && sizeof(Vector<float, 2>) == tl::SimdSize<tl::SimdExtension::eSSE42, float>::value) || sizeof(Vector<float, 2>) == 2*sizeof(float));
+	static_assert((tl::IsSimd<float> && sizeof(Vector<float, 3>) == tl::SimdSize<tl::SimdExtension::eSSE42, float>::value) || sizeof(Vector<float, 3>) == 3*sizeof(float));
+	static_assert((tl::IsSimd<float> && sizeof(Vector<float, 4>) == tl::SimdSize<tl::SimdExtension::eSSE42, float>::value) || sizeof(Vector<float, 4>) == 4*sizeof(float));
+
+} // namespace tl 
+
+
+template <tl::Arithmetic T, std::size_t D>
+struct std::formatter<tl::Vector<T, D>> : std::formatter<std::string> {
+	template <typename FormatContext>
+	inline auto format(const tl::Vector<T, D> &vector, FormatContext &ctx) const noexcept -> typename FormatContext::iterator {
+		std::ostringstream stream {};
+		stream << vector;
+		return std::formatter<std::string>::format(stream.str(), ctx);
+	}
+};
 
 #include "turbolin/vector.inl"
