@@ -23,6 +23,7 @@ namespace tl::sse42::vector {
 
 
 	template <tl::IsSSE42 T, tl::IsSSE42 T2, std::size_t D>
+	[[gnu::target("sse4.2")]]
 	inline auto loadReg(const tl::Vector<T2, D> &vector) noexcept -> Reg_t<T> {
 		if constexpr (std::is_same_v<T, float>) {
 			if constexpr (std::is_same_v<T2, float>)
@@ -37,6 +38,7 @@ namespace tl::sse42::vector {
 	}
 
 	template <tl::IsSSE42 T, std::size_t D>
+	[[gnu::target("sse4.2")]]
 	inline auto storeReg(tl::Vector<T, D> &vector, Reg_t<T> reg) noexcept -> void {
 		if constexpr (std::is_same_v<T, float>)
 			_mm_store_ps(reinterpret_cast<float*> (&vector), reg);
@@ -47,6 +49,7 @@ namespace tl::sse42::vector {
 
 
 	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic ...Args>
+	[[gnu::target("sse4.2")]]
 	constexpr auto construct(tl::Vector<T, D> &self, Args ...args) noexcept -> void {
 		if constexpr (!tl::IsSSE42<T> || sizeof...(Args) != 0)
 			return tl::default_::vector::construct(self, args...);
@@ -64,6 +67,7 @@ namespace tl::sse42::vector {
 
 
 	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2, std::size_t D2, tl::Arithmetic ...Args>
+	[[gnu::target("sse4.2")]]
 	constexpr auto copy(tl::Vector<T, D> &self, const tl::Vector<T2, D2> &vector, Args ...args) noexcept -> void {
 		if constexpr (!tl::IsSSE42<T> || !tl::IsSSE42<T2> || D != D2 || sizeof...(Args) != 0)
 			return tl::default_::vector::copy(self, vector, args...);
@@ -81,6 +85,7 @@ namespace tl::sse42::vector {
 
 
 	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2>
+	[[gnu::target("sse4.2")]]
 	constexpr auto equal(const tl::Vector<T, D> &lhs, const tl::Vector<T2, D> &rhs) noexcept -> bool {
 		if constexpr (!tl::IsSSE42<T> || !tl::IsSSE42<T2>)
 			return tl::default_::vector::equal(lhs, rhs);
@@ -107,6 +112,7 @@ namespace tl::sse42::vector {
 
 
 	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2>
+	[[gnu::target("sse4.2")]]
 	constexpr auto add(tl::Vector<T, D> &self, const tl::Vector<T2, D> &vector) noexcept -> void {
 		if constexpr (!tl::IsSSE42<T> || !tl::IsSSE42<T2>)
 			return tl::default_::vector::add(self, vector);
@@ -128,6 +134,7 @@ namespace tl::sse42::vector {
 
 
 	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2>
+	[[gnu::target("sse4.2")]]
 	constexpr auto sub(tl::Vector<T, D> &self, const tl::Vector<T2, D> &vector) noexcept -> void {
 		if constexpr (!tl::IsSSE42<T> || !tl::IsSSE42<T2>)
 			return tl::default_::vector::sub(self, vector);
@@ -149,6 +156,7 @@ namespace tl::sse42::vector {
 
 
 	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2>
+	[[gnu::target("sse4.2")]]
 	constexpr auto mul(tl::Vector<T, D> &self, const tl::Vector<T2, D> &vector) noexcept -> void {
 		if constexpr (!tl::IsSSE42<T> || !tl::IsSSE42<T2>)
 			return tl::default_::vector::mul(self, vector);
@@ -170,6 +178,7 @@ namespace tl::sse42::vector {
 
 
 	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2>
+	[[gnu::target("sse4.2")]]
 	constexpr auto scalarMul(tl::Vector<T, D> &self, T2 scalar) noexcept -> void {
 		if constexpr (!tl::IsSSE42<T> || !tl::IsSSE42<T2>)
 			return tl::default_::vector::scalarMul(self, scalar);
@@ -191,6 +200,7 @@ namespace tl::sse42::vector {
 
 
 	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2>
+	[[gnu::target("sse4.2")]]
 	constexpr auto dot(const tl::Vector<T, D> &lhs, const tl::Vector<T2, D> &rhs) noexcept -> T {
 		if constexpr (!tl::IsSSE42<T> || !tl::IsSSE42<T2>)
 			return tl::default_::vector::dot(lhs, rhs);
@@ -222,6 +232,7 @@ namespace tl::sse42::vector {
 
 
 	template <tl::Arithmetic T, tl::Arithmetic T2>
+	[[gnu::target("sse4.2")]]
 	constexpr auto cross(const tl::Vector<T, 3> &lhs, const tl::Vector<T2, 3> &rhs) noexcept -> tl::Vector<T, 3> {
 		if constexpr (!tl::IsSSE42<T> || !tl::IsSSE42<T2>)
 			return tl::default_::vector::cross(lhs, rhs);
