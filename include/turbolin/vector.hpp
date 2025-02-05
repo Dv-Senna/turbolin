@@ -101,6 +101,9 @@ namespace tl {
 	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2>
 	constexpr auto dot(const Vector<T, D> &lhs, const Vector<T2, D> &rhs) noexcept -> T;
 
+	template <tl::Arithmetic T, tl::Arithmetic T2>
+	constexpr auto cross(const Vector<T, 3> &lhs, const Vector<T2, 3> &rhs) noexcept -> Vector<T, 3>;
+
 
 	template <tl::Arithmetic T, std::size_t D>
 	auto operator<<(std::ostream &stream, const Vector<T, D> &vector) noexcept -> std::ostream&;

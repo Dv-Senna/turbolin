@@ -142,6 +142,16 @@ namespace tl {
 	}
 
 
+	template <tl::Arithmetic T, tl::Arithmetic T2>
+	constexpr auto cross(const Vector<T, 3> &lhs, const Vector<T2, 3> &rhs) noexcept -> Vector<T, 3> {
+		return tl::simdRuntimeDispatcher<
+			Vector<T, 3> (*)(const Vector<T, 3>&, const Vector<T2, 3>),
+			tl::default_::vector::cross<T, T2>,
+			tl::sse42::vector::cross<T, T2>
+		> (lhs, rhs);
+	}
+
+
 	template <tl::Arithmetic T, std::size_t D>
 	auto operator<<(std::ostream &stream, const Vector<T, D> &vector) noexcept -> std::ostream& {
 		if constexpr (D == 2)

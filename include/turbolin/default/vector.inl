@@ -116,4 +116,15 @@ namespace tl::default_::vector {
 		return result;
 	}
 
+
+	template <tl::Arithmetic T, tl::Arithmetic T2>
+	constexpr auto cross(const tl::Vector<T, 3> &lhs, const tl::Vector<T2, 3> &rhs) noexcept -> tl::Vector<T, 3> {
+		tl::Vector<T, 3> result {
+			lhs.y * static_cast<T> (rhs.z) - lhs.z * static_cast<T> (rhs.y),
+			lhs.z * static_cast<T> (rhs.x) - lhs.x * static_cast<T> (rhs.z),
+			lhs.x * static_cast<T> (rhs.y) - lhs.y * static_cast<T> (rhs.x)
+		};
+		return result;
+	}
+
 } // namespace tl::default_::vector

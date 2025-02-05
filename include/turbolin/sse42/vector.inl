@@ -194,4 +194,47 @@ namespace tl::sse42::vector {
 		}
 	}
 
+
+	template <tl::Arithmetic T, tl::Arithmetic T2>
+	constexpr auto cross(const tl::Vector<T, 3> &lhs, const tl::Vector<T2, 3> &rhs) noexcept -> tl::Vector<T, 3> {
+		if constexpr (!tl::IsSSE42<T> || !tl::IsSSE42<T2>)
+			return tl::default_::vector::cross(lhs, rhs);
+		else {
+			if constexpr (std::is_same_v<T, float>) {
+				tl::Vector<float, 3> result {};
+				__m128 r1 {loadReg<float> (lhs)};
+				__m128 r2 {loadReg<float> (rhs)};
+
+				__m128 shuf1_pos {_mm_shuffle_ps(r1, r1, _MM_SHUFFLE(3, 0, 2, 1))};
+				__m128 shuf1_neg {_mm_shuffle_ps(r1, r1, _MM_SHUFFLE(3, 1, 0, 2))};
+				__m128 shuf2_pos {_mm_shuffle_ps(r2, r2, _MM_SHUFFLE(3, 1, 0, 2))};
+				__m128 shuf2_neg {_mm_shuffle_ps(r2, r2, _MM_SHUFFLE(3, 0, 2, 1))};
+
+				__m128 mul_pos {_mm_mul_ps(shuf1_pos, shuf2_pos)};
+				__m128 mul_neg {_mm_mul_ps(shuf1_neg, shuf2_neg)};
+
+				__m128 res {_mm_sub_ps(mul_pos, mul_neg)};
+				storeReg(result, res);
+				return result;
+			}
+			else if constexpr (std::is_same_v<T, std::int32_t>) {
+				tl::Vector<std::int32_t, 3> result {};
+				__m128i r1 {loadReg<std::int32_t> (lhs)};
+				__m128i r2 {loadReg<std::int32_t> (rhs)};
+
+				__m128i shuf1_pos {_mm_shuffle_epi32(r1, _MM_SHUFFLE(3, 0, 2, 1))};
+				__m128i shuf1_neg {_mm_shuffle_epi32(r1, _MM_SHUFFLE(3, 1, 0, 2))};
+				__m128i shuf2_pos {_mm_shuffle_epi32(r2, _MM_SHUFFLE(3, 1, 0, 2))};
+				__m128i shuf2_neg {_mm_shuffle_epi32(r2, _MM_SHUFFLE(3, 0, 2, 1))};
+
+				__m128i mul_pos {_mm_mullo_epi32(shuf1_pos, shuf2_pos)};
+				__m128i mul_neg {_mm_mullo_epi32(shuf1_neg, shuf2_neg)};
+
+				__m128i res {_mm_sub_epi32(mul_pos, mul_neg)};
+				storeReg(result, res);
+				return result;
+			}
+		}
+	}
+
 } // namespace tl::sse42::vector
