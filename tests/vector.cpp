@@ -50,6 +50,8 @@ TIN_START_TEST(float_vector)
 	TIN_NAMED_CHECK("cross product vec5/vec3", tl::cross(vec5, vec3) == tl::Vector<float, 3> {-15.5f, 11.5f, -2.5f});
 TIN_END_TEST(float_vector, "Test of Turbolin's float vector implementation")
 
+
+
 TIN_START_TEST(int_vector)
 	tl::Vector<int, 4> vec0 {};
 	tl::Vector<int, 4> vec1 {1, 2, 3, 4};
@@ -68,7 +70,6 @@ TIN_START_TEST(int_vector)
 	TIN_NAMED_MANDATORY_CHECK("vec1 self equality", vec1 == vec1);
 
 	TIN_NAMED_MANDATORY_CHECK("vec1/vec2 equality",   vec1 == vec2);
-	std::println("{} != {}", vec0, vec1);
 	TIN_NAMED_MANDATORY_CHECK("vec0/vec1 inequality", vec0 != vec1);
 
 	TIN_NAMED_CHECK("vec1 += vec2", (vec1 += vec2) == tl::Vector<int, 4> {2, 4, 6, 8});
@@ -97,3 +98,50 @@ TIN_START_TEST(int_vector)
 	TIN_NAMED_CHECK("cross product vec5/vec3", tl::cross(vec5, vec3) == tl::Vector<int, 3> {-14, 10, -2});
 TIN_END_TEST(int_vector, "Test of Turbolin's int vector implementation")
 
+
+
+TIN_START_TEST(int64_vector)
+	tl::Vector<std::int64_t, 4> vec0 {};
+	tl::Vector<std::int64_t, 4> vec1 {1, 2, 3, 4};
+	tl::Vector<std::int64_t, 2> vec2_tmp {1, 2};
+	tl::Vector<std::int64_t, 4> vec2 {vec2_tmp, 3, 4};
+
+	TIN_NAMED_MANDATORY_CHECK("vec0 init", ((std::int64_t*)(&vec0))[0] == 0 && ((std::int64_t*)(&vec0))[1] == 0 && ((std::int64_t*)(&vec0))[2] == 0 && ((std::int64_t*)(&vec0))[3] == 0);
+	TIN_NAMED_MANDATORY_CHECK("vec1 init", ((std::int64_t*)(&vec1))[0] == 1 && ((std::int64_t*)(&vec1))[1] == 2 && ((std::int64_t*)(&vec1))[2] == 3 && ((std::int64_t*)(&vec1))[3] == 4);
+	TIN_NAMED_MANDATORY_CHECK("vec2 init", ((std::int64_t*)(&vec2))[0] == 1 && ((std::int64_t*)(&vec2))[1] == 2 && ((std::int64_t*)(&vec2))[2] == 3 && ((std::int64_t*)(&vec2))[3] == 4);
+
+	TIN_NAMED_MANDATORY_CHECK("vec0 alignment check", (std::size_t)(&vec0) % 16 == 0)
+	TIN_NAMED_MANDATORY_CHECK("vec1 alignment check", (std::size_t)(&vec1) % 16 == 0);
+	TIN_NAMED_MANDATORY_CHECK("vec2 alignment check", (std::size_t)(&vec2) % 16 == 0);
+
+	TIN_NAMED_MANDATORY_CHECK("vec0 self equality", vec0 == vec0);
+	TIN_NAMED_MANDATORY_CHECK("vec1 self equality", vec1 == vec1);
+
+	TIN_NAMED_MANDATORY_CHECK("vec1/vec2 equality",   vec1 == vec2);
+	TIN_NAMED_MANDATORY_CHECK("vec0/vec1 inequality", vec0 != vec1);
+
+	TIN_NAMED_CHECK("vec1 += vec2", (vec1 += vec2) == tl::Vector<std::int64_t, 4> {2, 4, 6, 8});
+	TIN_NAMED_CHECK("vec1 -= vec2", (vec1 -= vec2) == tl::Vector<std::int64_t, 4> {1, 2, 3, 4});
+	TIN_NAMED_CHECK("vec1 *= vec2", (vec1 *= vec2) == tl::Vector<std::int64_t, 4> {1, 4, 9, 16});
+
+	vec1 = {1, 2, 3, 4};
+
+	TIN_NAMED_CHECK("vec1 + vec2", (vec1 + vec2) == tl::Vector<std::int64_t, 4> {2, 4, 6, 8});
+	TIN_NAMED_CHECK("vec1 - vec2", (vec1 - vec2) == tl::Vector<std::int64_t, 4> {0, 0, 0, 0});
+	TIN_NAMED_CHECK("vec1 * vec2", (vec1 * vec2) == tl::Vector<std::int64_t, 4> {1, 4, 9, 16});
+
+	TIN_NAMED_CHECK("dot product vec1/vec2", tl::dot(vec1, vec2) == 30);
+	TIN_NAMED_CHECK("dot product vec0/vec1", tl::dot(vec0, vec1) == 0);
+	TIN_NAMED_CHECK("dot product vec0/vec2", tl::dot(vec0, vec2) == 0);
+
+
+	tl::Vector<std::int64_t, 3> vec3 {1, 2, 3};
+	tl::Vector<std::int64_t, 3> vec4 {2, 3, 4};
+	tl::Vector<std::int64_t, 3> vec5 {-1, 0, 7};
+
+	TIN_NAMED_CHECK("cross product vec3/vec3", tl::cross(vec3, vec3) == tl::Vector<std::int64_t, 3> {0, 0, 0});
+	TIN_NAMED_CHECK("cross product vec3/vec4", tl::cross(vec3, vec4) == tl::Vector<std::int64_t, 3> {-1, 2, -1});
+	TIN_NAMED_CHECK("cross product vec4/vec3", tl::cross(vec4, vec3) == tl::Vector<std::int64_t, 3> {1, -2, 1});
+	TIN_NAMED_CHECK("cross product vec3/vec5", tl::cross(vec3, vec5) == tl::Vector<std::int64_t, 3> {14, -10, 2});
+	TIN_NAMED_CHECK("cross product vec5/vec3", tl::cross(vec5, vec3) == tl::Vector<std::int64_t, 3> {-14, 10, -2});
+TIN_END_TEST(int64_vector, "Test of Turbolin's std::int64_t vector implementation")
