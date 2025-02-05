@@ -1,1 +1,1 @@
-./build/turbolin
+./build/turbolin -a

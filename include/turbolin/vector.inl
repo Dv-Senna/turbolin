@@ -45,6 +45,17 @@ namespace tl {
 
 
 	template <tl::Arithmetic T, std::size_t D>
+	template <tl::Arithmetic T2>
+	constexpr auto Vector<T, D>::operator==(const Vector<T2, D> &vector) const noexcept -> bool {
+		return tl::simdRuntimeDispatcher<
+			bool(*)(const Vector<T, D>&, const Vector<T, D>&),
+			tl::default_::vector::equal<T, D, T2>,
+			tl::sse42::vector::equal<T, D, T2>
+		> (*this, vector);
+	}
+
+
+	template <tl::Arithmetic T, std::size_t D>
 	constexpr auto Vector<T, D>::get(std::size_t index) noexcept -> T& {
 		TL_ASSERT(index < D, "Out of bound vector component access");
 
@@ -145,7 +156,7 @@ namespace tl {
 	template <tl::Arithmetic T, tl::Arithmetic T2>
 	constexpr auto cross(const Vector<T, 3> &lhs, const Vector<T2, 3> &rhs) noexcept -> Vector<T, 3> {
 		return tl::simdRuntimeDispatcher<
-			Vector<T, 3> (*)(const Vector<T, 3>&, const Vector<T2, 3>),
+			Vector<T, 3> (*)(const Vector<T, 3>&, const Vector<T2, 3>&),
 			tl::default_::vector::cross<T, T2>,
 			tl::sse42::vector::cross<T, T2>
 		> (lhs, rhs);

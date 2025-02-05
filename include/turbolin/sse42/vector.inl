@@ -31,8 +31,8 @@ namespace tl::sse42::vector {
 		}
 		else {
 			if constexpr (std::is_same_v<T2, float>)
-				return _mm_load_si128(reinterpret_cast<const __m128i*> (&vector));
-			return _mm_cvtps_epi32(_mm_load_ps(reinterpret_cast<const float*> (&vector)));
+				return _mm_cvtps_epi32(_mm_load_ps(reinterpret_cast<const float*> (&vector)));
+			return _mm_load_si128(reinterpret_cast<const __m128i*> (&vector));
 		}
 	}
 
@@ -75,6 +75,32 @@ namespace tl::sse42::vector {
 			else if constexpr (std::is_same_v<T, std::int32_t>) {
 				__m128i r1 {loadReg<std::int32_t> (vector)};
 				storeReg(self, r1);
+			}
+		}
+	}
+
+
+	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2>
+	constexpr auto equal(const tl::Vector<T, D> &lhs, const tl::Vector<T2, D> &rhs) noexcept -> bool {
+		if constexpr (!tl::IsSSE42<T> || !tl::IsSSE42<T2>)
+			return tl::default_::vector::equal(lhs, rhs);
+		else {
+			if constexpr (std::is_same_v<T, float>) {
+				__m128 r1 {loadReg<float> (lhs)};
+				__m128 r2 {loadReg<float> (rhs)};
+
+				r1 = _mm_sub_ps(r1, r2);
+				__m128 absMask {_mm_set1_ps(-0.f)};
+				r1 = _mm_andnot_ps(absMask, r1);
+				__m128 epsilon {_mm_set1_ps(std::numeric_limits<float>::epsilon())};
+				r1 = _mm_cmple_ps(r1, epsilon);
+				return _mm_movemask_ps(r1) == 0xf;
+			}
+			else {
+				__m128i r1 {loadReg<std::int32_t> (lhs)};
+				__m128i r2 {loadReg<std::int32_t> (rhs)};
+				r1 = _mm_cmpeq_epi32(r1, r2);
+				return _mm_movemask_epi8(r1) == 0xffff;
 			}
 		}
 	}

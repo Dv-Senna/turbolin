@@ -65,6 +65,9 @@ namespace tl {
 			template <tl::Arithmetic T2>
 			constexpr auto operator=(const Vector<T2, D> &vector) noexcept -> Vector<T, D>&;
 
+			template <tl::Arithmetic T2>
+			constexpr auto operator==(const Vector<T2, D> &vector) const noexcept -> bool;
+
 			constexpr auto get(std::size_t index) noexcept -> T&;
 			constexpr auto get(std::size_t index) const noexcept -> const T&;
 

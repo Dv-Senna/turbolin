@@ -31,9 +31,9 @@ namespace tl::default_::vector {
 		else if constexpr (D >= 4)
 			self.w = static_cast<T> (0);
 		else if constexpr (tl::IsSimd<T> && D == 3)
-			self.__padding[1] = static_cast<T> (0);
-		else if constexpr (tl::IsSimd<T>)
 			self.__padding[0] = static_cast<T> (0);
+		else if constexpr (tl::IsSimd<T>)
+			self.__padding[1] = static_cast<T> (0);
 	}
 
 
@@ -59,6 +59,22 @@ namespace tl::default_::vector {
 			self.z = static_cast<T> (vector.z);
 			self.w = static_cast<T> (vector.w);
 		}
+	}
+
+
+	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2>
+	constexpr auto equal(const tl::Vector<T, D> &lhs, const tl::Vector<T2, D> &rhs) noexcept -> bool {
+		if (lhs.x != rhs.x || lhs.y != rhs.y)
+			return false;
+		if constexpr (D >= 3) {
+			if (lhs.z != rhs.z)
+				return false;
+		}
+		else {
+			if (lhs.w != rhs.w)
+				return false;
+		}
+		return true;
 	}
 
 
