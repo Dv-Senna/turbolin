@@ -40,7 +40,7 @@ namespace tl {
 	concept IsAVX = std::same_as<T, float> || std::same_as<T, std::int32_t>;
 
 
-	auto isSimdExtensionSupported(SimdExtension extension) noexcept -> bool {
+	inline auto isSimdExtensionSupported(SimdExtension extension) noexcept -> bool {
 		static bool supported[static_cast<std::size_t> (SimdExtension::eAll)] {};
 		static bool firstTime {true};
 		if (!firstTime)
