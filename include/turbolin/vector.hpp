@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <ostream>
 #include <type_traits>
 
 #include "turbolin/simd.hpp"
@@ -11,13 +12,14 @@ namespace tl {
 		struct Empty {};
 
 		template <tl::Arithmetic T, std::size_t D>
+		requires (D > 1 && D <= 4)
 		struct VectorLayout;
 
 		template <tl::Arithmetic T>
 		struct VectorLayout<T, 2> {
 			union {T x, u, w;};
 			union {T y, v, h;};
-			private:
+			protected:
 				[[no_unique_address]]
 				std::conditional_t<tl::IsSimd<T>, T[2], Empty> __padding;
 		};
@@ -27,9 +29,9 @@ namespace tl {
 			union {T x, r;};
 			union {T y, g;};
 			union {T z, b;};
-			private:
+			protected:
 				[[no_unique_address]]
-				std::conditional_t<tl::IsSimd<T>, T, Empty> __padding;
+				std::conditional_t<tl::IsSimd<T>, T[1], Empty> __padding;
 		};
 
 		template <tl::Arithmetic T>
@@ -52,8 +54,23 @@ namespace tl {
 	template <tl::Arithmetic T, std::size_t D>
 	class alignas(__internals::VectorAlignment<T>::value) Vector : public __internals::VectorLayout<T, D> {
 		public:
+			template <tl::Arithmetic ...Args>
+			requires (sizeof...(Args) <= D)
+			constexpr Vector(Args ...args) noexcept;
+
+			template <tl::Arithmetic T2, std::size_t D2, tl::Arithmetic ...Args>
+			requires (sizeof...(Args) <= D - D2)
+			constexpr Vector(const Vector<T2, D2> &vector, Args ...args) noexcept;
+			template <tl::Arithmetic T2>
+			constexpr auto operator=(const Vector<T2, D> &vector) noexcept -> Vector<T, D>&;
+
+			constexpr auto get(std::size_t index) noexcept -> T&;
+			constexpr auto get(std::size_t index) const noexcept -> const T&;
 	};
 
+
+	template <tl::Arithmetic T, std::size_t D>
+	auto operator<<(std::ostream &stream, const Vector<T, D> &vector) noexcept -> std::ostream&;
 
 	// non-simd type
 	static_assert(alignof(Vector<char, 2>) == alignof(char));
@@ -74,3 +91,5 @@ namespace tl {
 	static_assert((tl::IsSimd<float> && sizeof(Vector<float, 4>) == tl::SimdSize<tl::SimdExtension::eSSE2, float>::value) || sizeof(Vector<float, 4>) == 4*sizeof(float));
 
 } // namespace tl 
+
+#include "turbolin/vector.inl"
