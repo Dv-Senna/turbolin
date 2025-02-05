@@ -6,7 +6,9 @@
 #include <iostream>
 
 #include "turbolin/assert.hpp"
+
 #include "turbolin/default/vector.inl"
+#include "turbolin/sse2/vector.inl"
 
 
 namespace tl {
@@ -16,7 +18,8 @@ namespace tl {
 	constexpr Vector<T, D>::Vector(Args ...args) noexcept {
 		tl::simdRuntimeDispatcher<
 			void(*)(Vector<T, D>&, Args...),
-			tl::default_::vector::construct<T, D, Args...>
+			tl::default_::vector::construct<T, D, Args...>,
+			tl::sse2::vector::construct<T, D, Args...>
 		> (*this, args...);
 	}
 
@@ -27,7 +30,8 @@ namespace tl {
 	constexpr Vector<T, D>::Vector(const Vector<T2, D2> &vector, Args ...args) noexcept {
 		tl::simdRuntimeDispatcher<
 			void(*)(Vector<T, D>&, const Vector<T2, D2>&, Args...),
-			tl::default_::vector::copy<T, D, T2, D2, Args...>
+			tl::default_::vector::copy<T, D, T2, D2, Args...>,
+			tl::sse2::vector::copy<T, D, T2, D2, Args...>
 		> (*this, vector, args...);
 	}
 
@@ -85,7 +89,8 @@ namespace tl {
 	constexpr auto Vector<T, D>::operator+=(const Vector<T2, D> &vector) noexcept -> Vector<T, D>& {
 		tl::simdRuntimeDispatcher<
 			void(*)(Vector<T, D>&, const Vector<T2, D>&),
-			tl::default_::vector::add<T, D, T2>
+			tl::default_::vector::add<T, D, T2>,
+			tl::sse2::vector::add<T, D, T2>
 		> (*this, vector);
 		return *this;
 	}

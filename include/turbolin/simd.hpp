@@ -31,13 +31,13 @@ namespace tl {
 	};
 
 	template <typename T>
-	concept IsSimd = std::same_as<T, float> || std::same_as<T, std::uint32_t>;
+	concept IsSimd = std::same_as<T, float> || std::same_as<T, std::int32_t>;
 
 	template <typename T>
-	concept IsSSE2 = std::same_as<T, float> || std::same_as<T, std::uint32_t>;
+	concept IsSSE2 = std::same_as<T, float> || std::same_as<T, std::int32_t>;
 
 	template <typename T>
-	concept IsAVX = std::same_as<T, float> || std::same_as<T, std::uint32_t>;
+	concept IsAVX = std::same_as<T, float> || std::same_as<T, std::int32_t>;
 
 
 	auto isSimdExtensionSupported(SimdExtension extension) noexcept -> bool {
