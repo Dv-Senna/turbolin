@@ -105,4 +105,15 @@ namespace tl::default_::vector {
 			self.w *= scalar;
 	}
 
+
+	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2>
+	constexpr auto dot(const tl::Vector<T, D> &lhs, const tl::Vector<T2, D> &rhs) noexcept -> T {
+		T result {lhs.x * static_cast<T> (rhs.x) + lhs.y * static_cast<T> (rhs.y)};
+		if constexpr (D >= 3)
+			result += lhs.z * static_cast<T> (rhs.z);
+		if constexpr (D >= 4)
+			result += lhs.w * static_cast<T> (rhs.w);
+		return result;
+	}
+
 } // namespace tl::default_::vector

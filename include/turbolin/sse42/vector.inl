@@ -136,7 +136,7 @@ namespace tl::sse42::vector {
 			else if constexpr (std::is_same_v<T, std::int32_t>) {
 				__m128i r1 {loadReg<std::int32_t> (self)};
 				__m128i r2 {loadReg<std::int32_t> (vector)};
-				r1 = _mm_mul_epi32(r1, r2);
+				r1 = _mm_mullo_epi32(r1, r2);
 				storeReg(self, r1);
 			}
 		}
@@ -157,8 +157,39 @@ namespace tl::sse42::vector {
 			else if constexpr (std::is_same_v<T, std::int32_t>) {
 				__m128i r1 {loadReg<std::int32_t> (self)};
 				__m128i r2 {_mm_set1_epi32(static_cast<std::int32_t> (scalar))};
-				r1 = _mm_mul_epi32(r1, r2);
+				r1 = _mm_mullo_epi32(r1, r2);
 				storeReg(self, r1);
+			}
+		}
+	}
+
+
+	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2>
+	constexpr auto dot(const tl::Vector<T, D> &lhs, const tl::Vector<T2, D> &rhs) noexcept -> T {
+		if constexpr (!tl::IsSSE42<T> || !tl::IsSSE42<T2>)
+			return tl::default_::vector::dot(lhs, rhs);
+		else {
+			if constexpr (std::is_same_v<T, float>) {
+				__m128 r1 {loadReg<float> (lhs)};
+				__m128 r2 {loadReg<float> (rhs)};
+
+				r1 = _mm_mul_ps(r1, r2);
+				__m128 shuf {_mm_movehdup_ps(r1)};
+				__m128 sums {_mm_add_ps(r1, shuf)};
+				shuf = _mm_movehl_ps(shuf, sums);
+				sums = _mm_add_ss(sums, shuf);
+				return _mm_cvtss_f32(sums);
+			}
+			else if constexpr (std::is_same_v<T, std::int32_t>) {
+				__m128i r1 {loadReg<std::int32_t> (lhs)};
+				__m128i r2 {loadReg<std::int32_t> (rhs)};
+
+				r1 = _mm_mullo_epi32(r1, r2);
+				__m128i shuf {_mm_shuffle_epi32(r1, _MM_SHUFFLE(1, 0, 3, 2))};
+				__m128i sums {_mm_add_epi32(r1, shuf)};
+				shuf = _mm_shuffle_epi32(sums, _MM_SHUFFLE(3, 2, 1, 1));
+				sums = _mm_add_epi32(sums, shuf);
+				return _mm_extract_epi32(sums, 0);
 			}
 		}
 	}

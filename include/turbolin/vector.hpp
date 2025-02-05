@@ -98,6 +98,9 @@ namespace tl {
 	Vector(Args ...args) noexcept -> Vector<std::tuple_element_t<0, std::tuple<Args...>>, sizeof...(Args)>;
 
 
+	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2>
+	constexpr auto dot(const Vector<T, D> &lhs, const Vector<T2, D> &rhs) noexcept -> T;
+
 
 	template <tl::Arithmetic T, std::size_t D>
 	auto operator<<(std::ostream &stream, const Vector<T, D> &vector) noexcept -> std::ostream&;

@@ -132,6 +132,16 @@ namespace tl {
 	}
 
 
+	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2>
+	constexpr auto dot(const Vector<T, D> &lhs, const Vector<T2, D> &rhs) noexcept -> T {
+		return tl::simdRuntimeDispatcher<
+			T(*)(const Vector<T, D>&, const Vector<T2, D>&),
+			tl::default_::vector::dot<T, D, T2>,
+			tl::sse42::vector::dot<T, D, T2>
+		> (lhs, rhs);
+	}
+
+
 	template <tl::Arithmetic T, std::size_t D>
 	auto operator<<(std::ostream &stream, const Vector<T, D> &vector) noexcept -> std::ostream& {
 		if constexpr (D == 2)
