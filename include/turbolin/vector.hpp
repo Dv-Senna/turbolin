@@ -19,9 +19,8 @@ namespace tl {
 		struct VectorLayout<T, 2> {
 			union {T x, u, w;};
 			union {T y, v, h;};
-			protected:
-				[[no_unique_address]]
-				std::conditional_t<tl::IsSimd<T>, T[2], Empty> __padding;
+			[[no_unique_address]]
+			std::conditional_t<tl::IsSimd<T>, T[2], Empty> __padding;
 		};
 
 		template <tl::Arithmetic T>
@@ -29,9 +28,8 @@ namespace tl {
 			union {T x, r;};
 			union {T y, g;};
 			union {T z, b;};
-			protected:
-				[[no_unique_address]]
-				std::conditional_t<tl::IsSimd<T>, T[1], Empty> __padding;
+			[[no_unique_address]]
+			std::conditional_t<tl::IsSimd<T>, T[1], Empty> __padding;
 		};
 
 		template <tl::Arithmetic T>
@@ -66,7 +64,14 @@ namespace tl {
 
 			constexpr auto get(std::size_t index) noexcept -> T&;
 			constexpr auto get(std::size_t index) const noexcept -> const T&;
+
+			template <tl::Arithmetic T2>
+			constexpr auto operator+=(const Vector<T2, D> &vector) noexcept -> Vector<T, D>&;
 	};
+
+	template <tl::Arithmetic ...Args>
+	Vector(Args ...args) noexcept -> Vector<std::tuple_element_t<0, std::tuple<Args...>>, sizeof...(Args)>;
+
 
 
 	template <tl::Arithmetic T, std::size_t D>

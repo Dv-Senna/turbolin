@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <concepts>
 #include <cstdint>
 #include <tuple>
@@ -23,10 +24,10 @@ namespace tl {
 	
 
 	enum class SimdExtension {
-		eNone,
-		eSSE2,
-		eAVX,
-		eAll
+		eNone = 0,
+		eSSE2 = 1,
+		eAVX  = 2,
+		eAll  = 3
 	};
 
 	template <typename T>
@@ -38,6 +39,43 @@ namespace tl {
 	template <typename T>
 	concept IsAVX = std::same_as<T, float> || std::same_as<T, std::uint32_t>;
 
+
+	auto isSimdExtensionSupported(SimdExtension extension) noexcept -> bool {
+		static bool supported[static_cast<std::size_t> (SimdExtension::eAll)] {};
+		static bool firstTime {true};
+		if (!firstTime)
+			return supported[static_cast<std::size_t> (extension)];
+
+		firstTime = false;
+		supported[static_cast<std::size_t> (SimdExtension::eNone)] = true;
+		supported[static_cast<std::size_t> (SimdExtension::eSSE2)] = !!__builtin_cpu_supports("sse2");
+		supported[static_cast<std::size_t> (SimdExtension::eAVX)] = !!__builtin_cpu_supports("avx");
+		return isSimdExtensionSupported(extension);
+	}
+
+
+	template <typename Func, Func ...funcs, typename ...Args>
+	requires (sizeof...(funcs) <= static_cast<std::size_t> (SimdExtension::eAll))
+	auto simdRuntimeDispatcher(Args &&...args) noexcept {
+		if consteval {
+			std::array<Func, sizeof...(funcs)> functions {funcs...};
+			return functions[0](args...);
+		}
+		else {
+			static Func impl {nullptr};
+			if (impl != nullptr)
+				return impl(args...);
+
+			std::array<Func, sizeof...(funcs)> functions {funcs...};
+			for (std::size_t i {functions.size()}; i-- != 0;) {
+				if (functions[i] == nullptr || !isSimdExtensionSupported(static_cast<SimdExtension> (i)))
+					continue;
+				impl = functions[i];
+				break;
+			}
+			return impl(args...);
+		}
+	}
 
 
 	template <SimdExtension EXT, Arithmetic T>
