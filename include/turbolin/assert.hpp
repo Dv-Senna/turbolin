@@ -1,5 +1,10 @@
 #pragma once
 
+#if __cplusplus < 202302L
+	#error This code requires C++23
+	#include <stop_compilation>
+#endif
+
 #include <print>
 
 #ifdef WIN32
@@ -13,6 +18,7 @@
 	#define __TL_ASSERT_DEBUG_BREAKPOINT raise(SIGTRAP)
 #else
 	#error Your platform is not supported
+	#include <stop_compilation>
 #endif
 
 
@@ -22,6 +28,7 @@
 	#define __TL_ASSERT_LOG_MESSAGE(expr, msg) std::println(stderr, "Assert in " __PRETTY_FUNCTION__ " (" __FILE__ ":{}) '" #expr "' failed : " msg, __LINE__)
 #else
 	#error Your compiler is not supported
+	#include <stop_compilation>
 #endif
 
 
