@@ -70,6 +70,17 @@ namespace tl {
 
 			template <tl::Arithmetic T2>
 			constexpr auto operator+=(const Vector<T2, D> &vector) noexcept -> Vector<T, D>&;
+			template <tl::Arithmetic T2>
+			constexpr auto operator-=(const Vector<T2, D> &vector) noexcept -> Vector<T, D>&;
+			template <tl::Arithmetic T2>
+			constexpr auto operator*=(const Vector<T2, D> &vector) noexcept -> Vector<T, D>&;
+
+			template <tl::Arithmetic T2>
+			constexpr auto operator+(const Vector<T2, D> &vector) const noexcept {auto tmp {*this}; return tmp += vector;}
+			template <tl::Arithmetic T2>
+			constexpr auto operator-(const Vector<T2, D> &vector) const noexcept {auto tmp {*this}; return tmp += vector;}
+			template <tl::Arithmetic T2>
+			constexpr auto operator*(const Vector<T2, D> &vector) const noexcept {auto tmp {*this}; return tmp += vector;}
 	};
 
 	template <tl::Arithmetic ...Args>

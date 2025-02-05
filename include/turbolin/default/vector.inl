@@ -72,4 +72,26 @@ namespace tl::default_::vector {
 			self.w += vector.w;
 	}
 
+
+	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2>
+	constexpr auto sub(tl::Vector<T, D> &self, const tl::Vector<T2, D> &vector) noexcept -> void {
+		self.x -= vector.x;
+		self.y -= vector.y;
+		if constexpr (D >= 3)
+			self.z -= vector.z;
+		if constexpr (D >= 4)
+			self.w -= vector.w;
+	}
+
+
+	template <tl::Arithmetic T, std::size_t D, tl::Arithmetic T2>
+	constexpr auto mul(tl::Vector<T, D> &self, const tl::Vector<T2, D> &vector) noexcept -> void {
+		self.x *= vector.x;
+		self.y *= vector.y;
+		if constexpr (D >= 3)
+			self.z *= vector.z;
+		if constexpr (D >= 4)
+			self.w *= vector.w;
+	}
+
 } // namespace tl::default_::vector

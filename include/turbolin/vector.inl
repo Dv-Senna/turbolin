@@ -97,6 +97,30 @@ namespace tl {
 
 
 	template <tl::Arithmetic T, std::size_t D>
+	template <tl::Arithmetic T2>
+	constexpr auto Vector<T, D>::operator-=(const Vector<T2, D> &vector) noexcept -> Vector<T, D>& {
+		tl::simdRuntimeDispatcher<
+			void(*)(Vector<T, D>&, const Vector<T2, D>&),
+			tl::default_::vector::sub<T, D, T2>,
+			tl::sse2::vector::sub<T, D, T2>
+		> (*this, vector);
+		return *this;
+	}
+
+
+	template <tl::Arithmetic T, std::size_t D>
+	template <tl::Arithmetic T2>
+	constexpr auto Vector<T, D>::operator*=(const Vector<T2, D> &vector) noexcept -> Vector<T, D>& {
+		tl::simdRuntimeDispatcher<
+			void(*)(Vector<T, D>&, const Vector<T2, D>&),
+			tl::default_::vector::mul<T, D, T2>,
+			tl::sse2::vector::mul<T, D, T2>
+		> (*this, vector);
+		return *this;
+	}
+
+
+	template <tl::Arithmetic T, std::size_t D>
 	auto operator<<(std::ostream &stream, const Vector<T, D> &vector) noexcept -> std::ostream& {
 		if constexpr (D == 2)
 			stream << "(" << vector.x << ", " << vector.y << ")";
