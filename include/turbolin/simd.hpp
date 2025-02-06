@@ -59,12 +59,12 @@ namespace tl {
 	constexpr auto simdRuntimeDispatcher(Args &&...args) noexcept {
 		if consteval {
 			std::array<Func, sizeof...(funcs)> functions {funcs...};
-			return functions[0](args...);
+			return functions[0](std::forward<Args> (args)...);
 		}
 		else {
 			static Func impl {nullptr};
 			if (impl != nullptr) [[likely]]
-				return impl(args...);
+				return impl(std::forward<Args> (args)...);
 
 			std::array<Func, sizeof...(funcs)> functions {funcs...};
 			for (std::size_t i {functions.size()}; i-- != 0;) {
@@ -73,7 +73,7 @@ namespace tl {
 				impl = functions[i];
 				break;
 			}
-			return impl(args...);
+			return impl(std::forward<Args> (args)...);
 		}
 	}
 
