@@ -129,6 +129,15 @@ namespace tl {
 	static_assert((tl::IsSimd<float> && sizeof(Vector<float, 3>) == tl::SimdSize<tl::SimdExtension::eSSE42, float>::value) || sizeof(Vector<float, 3>) == 3*sizeof(float));
 	static_assert((tl::IsSimd<float> && sizeof(Vector<float, 4>) == tl::SimdSize<tl::SimdExtension::eSSE42, float>::value) || sizeof(Vector<float, 4>) == 4*sizeof(float));
 
+
+	using Vec2f = tl::Vector<float, 2>;
+	using Vec3f = tl::Vector<float, 3>;
+	using Vec4f = tl::Vector<float, 4>;
+
+	using Vec2i = tl::Vector<std::int32_t, 2>;
+	using Vec3i = tl::Vector<std::int32_t, 3>;
+	using Vec4i = tl::Vector<std::int32_t, 4>;
+
 } // namespace tl 
 
 

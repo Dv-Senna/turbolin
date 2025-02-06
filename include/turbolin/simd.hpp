@@ -43,27 +43,27 @@ namespace tl {
 	inline auto isSimdExtensionSupported(SimdExtension extension) noexcept -> bool {
 		static bool supported[static_cast<std::size_t> (SimdExtension::eAll)] {};
 		static bool firstTime {true};
-		if (!firstTime)
+		if (!firstTime) [[likely]]
 			return supported[static_cast<std::size_t> (extension)];
 
 		firstTime = false;
 		supported[static_cast<std::size_t> (SimdExtension::eNone)] = true;
-		supported[static_cast<std::size_t> (SimdExtension::eSSE42)] = !!__builtin_cpu_supports("sse4.2");
-		supported[static_cast<std::size_t> (SimdExtension::eAVX)] = !!__builtin_cpu_supports("avx");
+		supported[static_cast<std::size_t> (SimdExtension::eSSE42)] = __builtin_cpu_supports("sse4.2");
+		supported[static_cast<std::size_t> (SimdExtension::eAVX)] = __builtin_cpu_supports("avx");
 		return isSimdExtensionSupported(extension);
 	}
 
 
 	template <typename Func, Func ...funcs, typename ...Args>
 	requires (sizeof...(funcs) <= static_cast<std::size_t> (SimdExtension::eAll))
-	auto simdRuntimeDispatcher(Args &&...args) noexcept {
+	constexpr auto simdRuntimeDispatcher(Args &&...args) noexcept {
 		if consteval {
 			std::array<Func, sizeof...(funcs)> functions {funcs...};
 			return functions[0](args...);
 		}
 		else {
 			static Func impl {nullptr};
-			if (impl != nullptr)
+			if (impl != nullptr) [[likely]]
 				return impl(args...);
 
 			std::array<Func, sizeof...(funcs)> functions {funcs...};
