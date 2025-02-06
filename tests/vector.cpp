@@ -1,6 +1,7 @@
 #include <TestItNow/TestItNow.hpp>
-
 #include <turbolin/vector.hpp>
+
+#include <cmath>
 
 
 
@@ -38,6 +39,10 @@ TIN_START_TEST(float_vector)
 	TIN_NAMED_CHECK("dot product vec0/vec1", tl::dot(vec0, vec1) == 0.f);
 	TIN_NAMED_CHECK("dot product vec0/vec2", tl::dot(vec0, vec2) == 0.f);
 
+	TIN_NAMED_CHECK("length vec0", tl::length(vec0) == 0.f);
+	TIN_NAMED_CHECK("length vec1", abs(tl::length(vec1) - std::sqrt(30.f)) < std::numeric_limits<float>::epsilon());
+	TIN_NAMED_CHECK("length2 vec0", tl::length2(vec0) == 0.f);
+	TIN_NAMED_CHECK("length2 vec1", tl::length2(vec1) == 30.f);
 
 	tl::Vector<float, 3> vec3 {1.f, 2.f, 3.f};
 	tl::Vector<float, 3> vec4 {2.f, 3.f, 4.f};

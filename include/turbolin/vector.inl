@@ -164,6 +164,36 @@ namespace tl {
 
 
 	template <tl::Arithmetic T, std::size_t D>
+	constexpr auto length(const Vector<T, D> &vector) noexcept -> T {
+		return tl::simdRuntimeDispatcher<
+			T(*)(const Vector<T, D>&),
+			tl::default_::vector::length<T, D>,
+			tl::sse42::vector::length<T, D>
+		> (vector);
+	}
+
+
+	template <tl::Arithmetic T, std::size_t D>
+	constexpr auto length2(const Vector<T, D> &vector) noexcept -> T {
+		return tl::simdRuntimeDispatcher<
+			T(*)(const Vector<T, D>&),
+			tl::default_::vector::length2<T, D>,
+			tl::sse42::vector::length2<T, D>
+		> (vector);
+	}
+
+
+	template <tl::Arithmetic T, std::size_t D>
+	constexpr auto normalize(const Vector<T, D> &vector) noexcept -> Vector<T, D> {
+		return tl::simdRuntimeDispatcher<
+			Vector<T, D> (*)(const Vector<T, D>&),
+			tl::default_::vector::normalize<T, D>,
+			tl::sse42::vector::normalize<T, D>
+		> (vector);
+	}
+
+
+	template <tl::Arithmetic T, std::size_t D>
 	auto operator<<(std::ostream &stream, const Vector<T, D> &vector) noexcept -> std::ostream& {
 		if constexpr (D == 2)
 			stream << "(" << vector.x << ", " << vector.y << ")";

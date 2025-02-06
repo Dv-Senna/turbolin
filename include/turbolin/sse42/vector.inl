@@ -1,6 +1,7 @@
 #pragma once
 
 #include <x86intrin.h>
+#include <cmath>
 
 #include "turbolin/simd.hpp"
 #include "turbolin/vector.hpp"
@@ -270,6 +271,96 @@ namespace tl::sse42::vector {
 				__m128i res {_mm_sub_epi32(mul_pos, mul_neg)};
 				storeReg(result, res);
 				return result;
+			}
+		}
+	}
+
+
+	template <tl::Arithmetic T, std::size_t D>
+	[[gnu::target("sse4.2")]]
+	constexpr auto length(const tl::Vector<T, D> &vector) noexcept -> T {
+		if constexpr (!tl::IsSSE42<T>)
+			return tl::default_::vector::length(vector);
+		else {
+			if constexpr (std::is_same_v<T, float>) {
+				__m128 r1 {loadReg<float> (vector)};
+				r1 = _mm_mul_ps(r1, r1);
+				__m128 shuf {_mm_movehdup_ps(r1)};
+				__m128 sums {_mm_add_ps(r1, shuf)};
+				shuf = _mm_movehl_ps(shuf, sums);
+				sums = _mm_add_ss(sums, shuf);
+				return std::sqrt(_mm_cvtss_f32(sums));
+			}
+			else if constexpr (std::is_same_v<T, std::int32_t>) {
+				__m128i r1 {loadReg<std::int32_t> (vector)};
+				r1 = _mm_mullo_epi32(r1, r1);
+				__m128i shuf {_mm_shuffle_epi32(r1, _MM_SHUFFLE(1, 0, 3, 2))};
+				__m128i sums {_mm_add_epi32(r1, shuf)};
+				shuf = _mm_shuffle_epi32(sums, _MM_SHUFFLE(3, 2, 1, 1));
+				sums = _mm_add_epi32(sums, shuf);
+				return std::sqrt(_mm_extract_epi32(sums, 0));
+			}
+		}
+	}
+
+
+	template <tl::Arithmetic T, std::size_t D>
+	[[gnu::target("sse4.2")]]
+	constexpr auto length2(const tl::Vector<T, D> &vector) noexcept -> T {
+		if constexpr (!tl::IsSSE42<T>)
+			return tl::default_::vector::length(vector);
+		else {
+			if constexpr (std::is_same_v<T, float>) {
+				__m128 r1 {loadReg<float> (vector)};
+				r1 = _mm_mul_ps(r1, r1);
+				__m128 shuf {_mm_movehdup_ps(r1)};
+				__m128 sums {_mm_add_ps(r1, shuf)};
+				shuf = _mm_movehl_ps(shuf, sums);
+				sums = _mm_add_ss(sums, shuf);
+				return _mm_cvtss_f32(sums);
+			}
+			else if constexpr (std::is_same_v<T, std::int32_t>) {
+				__m128i r1 {loadReg<std::int32_t> (vector)};
+				r1 = _mm_mullo_epi32(r1, r1);
+				__m128i shuf {_mm_shuffle_epi32(r1, _MM_SHUFFLE(1, 0, 3, 2))};
+				__m128i sums {_mm_add_epi32(r1, shuf)};
+				shuf = _mm_shuffle_epi32(sums, _MM_SHUFFLE(3, 2, 1, 1));
+				sums = _mm_add_epi32(sums, shuf);
+				return _mm_extract_epi32(sums, 0);
+			}
+		}
+	}
+
+
+	template <tl::Arithmetic T, std::size_t D>
+	[[gnu::target("sse4.2")]]
+	constexpr auto normalize(const tl::Vector<T, D> &vector) noexcept -> tl::Vector<T, D> {
+		if constexpr (!tl::IsSSE42<T>)
+			return tl::default_::vector::normalize(vector);
+		else {
+			if constexpr (std::is_same_v<T, float>) {
+				__m128 r1 {loadReg<float> (vector)};
+				__m128 r2 = _mm_mul_ps(r1, r1);
+				__m128 shuf {_mm_movehdup_ps(r2)};
+				__m128 sums {_mm_add_ps(r2, shuf)};
+				shuf = _mm_movehl_ps(shuf, sums);
+				sums = _mm_add_ss(sums, shuf);
+
+				__m128 rsqrt {_mm_set1_ps(_mm_cvtss_f32(sums))};
+				rsqrt = _mm_rsqrt_ps(rsqrt);
+				r1 = _mm_mul_ps(r1, rsqrt);
+				tl::Vector<T, D> result {};
+				storeReg(result, r1);
+				return result;
+			}
+			else if constexpr (std::is_same_v<T, std::int32_t>) {
+				__m128i r1 {loadReg<std::int32_t> (vector)};
+				__m128i r2 = _mm_mullo_epi32(r1, r1);
+				__m128i shuf {_mm_shuffle_epi32(r2, _MM_SHUFFLE(1, 0, 3, 2))};
+				__m128i sums {_mm_add_epi32(r2, shuf)};
+				shuf = _mm_shuffle_epi32(sums, _MM_SHUFFLE(3, 2, 1, 1));
+				sums = _mm_add_epi32(sums, shuf);
+				return vector / std::sqrt(_mm_extract_epi32(sums, 0));
 			}
 		}
 	}

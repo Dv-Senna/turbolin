@@ -89,9 +89,9 @@ namespace tl {
 			template <tl::Arithmetic T2>
 			constexpr auto operator*(const Vector<T2, D> &vector) const noexcept {auto tmp {*this}; return tmp *= vector;}
 			template <tl::Arithmetic T2>
-			constexpr auto operator*(T2 scalar) noexcept {auto tmp {*this}; return tmp *= scalar;};
+			constexpr auto operator*(T2 scalar) const noexcept {auto tmp {*this}; return tmp *= scalar;};
 			template <tl::Arithmetic T2>
-			constexpr auto operator/(T2 scalar) noexcept {auto tmp {*this}; return tmp /= scalar;};
+			constexpr auto operator/(T2 scalar) const noexcept {auto tmp {*this}; return tmp /= scalar;};
 
 			template <tl::Arithmetic T2>
 			friend constexpr auto operator*(T2 scalar, Vector<T, D> vector) noexcept {return vector *= scalar;}
@@ -106,6 +106,17 @@ namespace tl {
 
 	template <tl::Arithmetic T, tl::Arithmetic T2>
 	constexpr auto cross(const Vector<T, 3> &lhs, const Vector<T2, 3> &rhs) noexcept -> Vector<T, 3>;
+
+
+	template <tl::Arithmetic T, std::size_t D>
+	constexpr auto length(const Vector<T, D> &vector) noexcept -> T;
+
+	template <tl::Arithmetic T, std::size_t D>
+	constexpr auto length2(const Vector<T, D> &vector) noexcept -> T;
+
+	template <tl::Arithmetic T, std::size_t D>
+	constexpr auto normalize(const Vector<T, D> &vector) noexcept -> Vector<T, D>;
+
 
 
 	template <tl::Arithmetic T, std::size_t D>

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 #include "turbolin/simd.hpp"
 #include "turbolin/vector.hpp"
 
@@ -141,6 +143,24 @@ namespace tl::default_::vector {
 			lhs.x * static_cast<T> (rhs.y) - lhs.y * static_cast<T> (rhs.x)
 		};
 		return result;
+	}
+
+
+	template <tl::Arithmetic T, std::size_t D>
+	constexpr auto length(const tl::Vector<T, D> &vector) noexcept -> T {
+		return std::sqrt(tl::default_::vector::dot(vector, vector));
+	}
+
+
+	template <tl::Arithmetic T, std::size_t D>
+	constexpr auto length2(const tl::Vector<T, D> &vector) noexcept -> T {
+		return tl::default_::vector::dot(vector, vector);
+	}
+
+
+	template <tl::Arithmetic T, std::size_t D>
+	constexpr auto normalize(const tl::Vector<T, D> &vector) noexcept -> Vector<T, D> {
+		return vector / std::sqrt(tl::default_::vector::dot(vector, vector));
 	}
 
 } // namespace tl::default_::vector
