@@ -93,6 +93,8 @@ namespace tl {
 			template <tl::Arithmetic T2>
 			constexpr auto operator/(T2 scalar) const noexcept {auto tmp {*this}; return tmp /= scalar;};
 
+			constexpr auto operator-() const noexcept -> Vector<T, D> {return *this * static_cast<T> (-1);}
+
 			template <tl::Arithmetic T2>
 			friend constexpr auto operator*(T2 scalar, Vector<T, D> vector) noexcept {return vector *= scalar;}
 	};
