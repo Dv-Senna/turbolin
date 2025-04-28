@@ -28,9 +28,9 @@ namespace tl {
 
 		template <tl::Arithmetic T>
 		struct VectorLayout<T, 3> {
-			union {T x, r;};
-			union {T y, g;};
-			union {T z, b;};
+			union {T x, r, h;};
+			union {T y, g, s;};
+			union {T z, b, l;};
 			[[no_unique_address]]
 			std::conditional_t<tl::IsSimd<T>, T[1], Empty> __padding;
 		};
