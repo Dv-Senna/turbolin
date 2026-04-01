@@ -1,28 +1,14 @@
 set(CMAKE_PROJECT_MINIMUM_VERSION 3.20)
 cmake_minimum_required(VERSION 3.20)
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 project(turbolin
-	VERSION 0.0.0
+	VERSION 0.1.0
 	LANGUAGES CXX
 )
 
-set(PROJECT_ACRONYM tl)
-string(TOUPPER ${PROJECT_ACRONYM} PROJECT_ACRONYM_UPPERCASE)
-set(PROJECT_CPP_DIALECT 23)
-set(CMAKE_CXX_STANDARD ${PROJECT_CPP_DIALECT})
+add_library(turbolin INTERFACE)
+add_library(turbolin::turbolin ALIAS turbolin)
 
-option(BUILD_TESTS "BUILD_TESTS" OFF)
-
-add_compile_definitions("${PROJECT_ACRONYM_UPPERCASE}_$<IF:$<CONFIG:Debug>,DEBUG,RELEASE>")
-
-include_directories(include vendors/TestItNow/include)
-
-file(GLOB_RECURSE TURBOLIN_HEADER include/*.hpp)
-file(GLOB_RECURSE TURBOLIN_INLINE include/*.inl)
-file(GLOB_RECURSE TEST_SOURCES tests/*.cpp)
-
-add_compile_options(-Wall -Wextra -pedantic)
-
-add_executable(${PROJECT_NAME} ${TURBOLIN_HEADER} ${TURBOLIN_INLINE} ${TEST_SOURCES})
+target_include_directories(turbolin INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_compile_definitions("TL_$<IF:$<CONFIG:Debug>,DEBUG,RELEASE>")
+target_compile_features(turbolin INTERFACE cxx_std_23)
