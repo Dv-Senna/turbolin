@@ -10,5 +10,5 @@ add_library(turbolin INTERFACE)
 add_library(turbolin::turbolin ALIAS turbolin)
 
 target_include_directories(turbolin INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_compile_definitions("TL_$<IF:$<CONFIG:Debug>,DEBUG,RELEASE>")
+target_compile_definitions(turbolin INTERFACE "TL_$<IF:$<CONFIG:Debug>,DEBUG,RELEASE>")
 target_compile_features(turbolin INTERFACE cxx_std_23)
