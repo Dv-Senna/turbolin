@@ -55,8 +55,10 @@ namespace tl {
 	template <tl::Arithmetic T, std::size_t D>
 	class alignas(__internals::VectorAlignment<T>::value) Vector : public __internals::VectorLayout<T, D> {
 		public:
+			constexpr Vector() noexcept;
+
 			template <tl::Arithmetic ...Args>
-			requires (sizeof...(Args) <= D)
+			requires (0 < sizeof...(Args) && sizeof...(Args) <= D)
 			constexpr Vector(Args ...args) noexcept;
 
 			template <tl::Arithmetic T2, std::size_t D2, tl::Arithmetic ...Args>

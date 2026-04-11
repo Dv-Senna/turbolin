@@ -13,8 +13,13 @@
 
 namespace tl {
 	template <tl::Arithmetic T, std::size_t D>
+	constexpr Vector<T, D>::Vector() noexcept {
+
+	}
+
+	template <tl::Arithmetic T, std::size_t D>
 	template <tl::Arithmetic ...Args>
-	requires (sizeof...(Args) <= D)
+	requires (0 < sizeof...(Args) && sizeof...(Args) <= D)
 	constexpr Vector<T, D>::Vector(Args ...args) noexcept {
 		tl::simdRuntimeDispatcher<
 			void(*)(Vector<T, D>&, Args...),
